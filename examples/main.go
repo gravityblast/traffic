@@ -20,6 +20,7 @@ func main() {
   router := traffic.New()
   router.Get("/", rootHandler)
   router.Get("/categories/:category_id/pages/:id", pageHandler)
+
   http.Handle("/", router)
   http.ListenAndServe(":7000", nil)
 }
