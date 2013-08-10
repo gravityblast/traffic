@@ -8,31 +8,29 @@ type HttpMethod string
 
 type Router struct {
   routes map[HttpMethod][]*Route
+  NotFoundHandler HttpHandleFunc
 }
 
-func (router *Router) Add(method HttpMethod, route *Route) {
+func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) {
+  route := NewRoute(path, handler)
   router.routes[method] = append(router.routes[method], route)
 }
 
 func (router *Router) Get(path string, handler HttpHandleFunc) {
-  route := NewRoute(path, handler)
-  router.Add(HttpMethod("GET"), route)
-  router.Add(HttpMethod("HEAD"), route)
+  router.Add(HttpMethod("GET"), path, handler)
+  router.Add(HttpMethod("HEAD"), path, handler)
 }
 
 func (router *Router) Post(path string, handler HttpHandleFunc) {
-  route := NewRoute(path, handler)
-  router.Add(HttpMethod("POST"), route)
+  router.Add(HttpMethod("POST"), path, handler)
 }
 
 func (router *Router) Delete(path string, handler HttpHandleFunc) {
-  route := NewRoute(path, handler)
-  router.Add(HttpMethod("DELETE"), route)
+  router.Add(HttpMethod("DELETE"), path, handler)
 }
 
 func (router *Router) Put(path string, handler HttpHandleFunc) {
-  route := NewRoute(path, handler)
-  router.Add(HttpMethod("PUT"), route)
+  router.Add(HttpMethod("PUT"), path, handler)
 }
 
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +49,11 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     }
   }
 
-  http.NotFound(w, r)
+  if router.NotFoundHandler != nil {
+    router.NotFoundHandler(w, r)
+  } else {
+    http.NotFound(w, r)
+  }
 }
 
 func New() *Router {

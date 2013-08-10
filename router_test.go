@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 func TestAdd(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["GET"]))
-  router.Add(HttpMethod("GET"), &Route{})
+  router.Add(HttpMethod("GET"), "/", httpHandlerExample)
   assert.Equal(t, 1, len(router.routes["GET"]))
 }
 
