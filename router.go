@@ -20,6 +20,21 @@ func (router *Router) Get(path string, handler HttpHandleFunc) {
   router.Add(HttpMethod("HEAD"), route)
 }
 
+func (router *Router) Post(path string, handler HttpHandleFunc) {
+  route := NewRoute(path, handler)
+  router.Add(HttpMethod("POST"), route)
+}
+
+func (router *Router) Delete(path string, handler HttpHandleFunc) {
+  route := NewRoute(path, handler)
+  router.Add(HttpMethod("DELETE"), route)
+}
+
+func (router *Router) Put(path string, handler HttpHandleFunc) {
+  route := NewRoute(path, handler)
+  router.Add(HttpMethod("PUT"), route)
+}
+
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   for _, route := range router.routes[HttpMethod(r.Method)] {
     values, ok := route.Match(r.URL.Path)
