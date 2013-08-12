@@ -6,9 +6,12 @@ import (
 
 type HttpMethod string
 
+type BeforeFilterFunc func(http.ResponseWriter, *http.Request)
+
 type Router struct {
   routes map[HttpMethod][]*Route
   NotFoundHandler HttpHandleFunc
+  BeforeFilter BeforeFilterFunc
 }
 
 func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) {
@@ -43,6 +46,10 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
       }
 
       r.URL.RawQuery = newValues.Encode()
+
+      if router.BeforeFilter != nil {
+        router.BeforeFilter(w, r)
+      }
 
       route.Handler(w, r)
       return
