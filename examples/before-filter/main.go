@@ -16,8 +16,13 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Page ID: %s\n", params.Get("id"))
 }
 
-func customBeforeFilter(w http.ResponseWriter, r *http.Request) {
-  w.Header().Add("X-APP-NAME", "My App")
+func customBeforeFilter(w http.ResponseWriter, r *http.Request) bool {
+  params := r.URL.Query()
+  if params.Get("api_key") != "foo" {
+    w.WriteHeader(http.StatusUnauthorized)
+    return false
+  }
+  return true
 }
 
 func main() {

@@ -9,7 +9,7 @@ type RequestLogFunc func(int, *http.Request)
 
 type HttpMethod string
 
-type BeforeFilterFunc func(http.ResponseWriter, *http.Request)
+type BeforeFilterFunc func(http.ResponseWriter, *http.Request) bool
 
 type Router struct {
   routes map[HttpMethod][]*Route
@@ -77,11 +77,16 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
       r.URL.RawQuery = newValues.Encode()
 
+      continueAfterBeforeFilter := true
+
       if router.BeforeFilter != nil {
-        router.BeforeFilter(lrw, r)
+        continueAfterBeforeFilter = router.BeforeFilter(lrw, r)
       }
 
-      route.Handler(lrw, r)
+      if continueAfterBeforeFilter {
+        route.Handler(lrw, r)
+      }
+
       lrw.Flush()
       return
     }
