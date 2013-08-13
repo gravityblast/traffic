@@ -2,7 +2,10 @@ package traffic
 
 import (
   "net/http"
+  "fmt"
 )
+
+type LogFunc func(*http.Request)
 
 type HttpMethod string
 
@@ -12,6 +15,7 @@ type Router struct {
   routes map[HttpMethod][]*Route
   NotFoundHandler HttpHandleFunc
   BeforeFilter BeforeFilterFunc
+  LogFunc LogFunc
 }
 
 func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) {
@@ -37,6 +41,7 @@ func (router *Router) Put(path string, handler HttpHandleFunc) {
 }
 
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+  router.LogFunc(r)
   for _, route := range router.routes[HttpMethod(r.Method)] {
     values, ok := route.Match(r.URL.Path)
     if ok {
@@ -63,9 +68,14 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func (router Router) defaultLogFunc(r *http.Request) {
+  fmt.Printf("%s?%s\n", r.URL.Path, r.URL.RawQuery)
+}
+
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
+  router.LogFunc = router.defaultLogFunc
   return router
 }
 
