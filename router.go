@@ -5,7 +5,7 @@ import (
   "fmt"
 )
 
-type LogFunc func(*http.Request)
+type RequestLogFunc func(int, *http.Request)
 
 type HttpMethod string
 
@@ -15,7 +15,7 @@ type Router struct {
   routes map[HttpMethod][]*Route
   NotFoundHandler HttpHandleFunc
   BeforeFilter BeforeFilterFunc
-  LogFunc LogFunc
+  RequestLogFunc RequestLogFunc
 }
 
 func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) {
@@ -40,8 +40,33 @@ func (router *Router) Put(path string, handler HttpHandleFunc) {
   router.Add(HttpMethod("PUT"), path, handler)
 }
 
+type LoggedResponseWriter struct {
+  http.ResponseWriter
+  request *http.Request
+  log RequestLogFunc
+  statusCode int
+}
+
+func (loggedResponseWriter *LoggedResponseWriter) WriteHeader(statusCode int) {
+  loggedResponseWriter.statusCode = statusCode
+  loggedResponseWriter.ResponseWriter.WriteHeader(statusCode)
+}
+
+func (loggedResponseWriter LoggedResponseWriter) Flush() {
+  statusCode := loggedResponseWriter.statusCode
+  if statusCode == 0 {
+    statusCode = http.StatusOK
+  }
+  loggedResponseWriter.log(statusCode, loggedResponseWriter.request)
+}
+
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  router.LogFunc(r)
+  lrw := &LoggedResponseWriter{
+    ResponseWriter: w,
+    request: r,
+    log: router.RequestLogFunc,
+  }
+
   for _, route := range router.routes[HttpMethod(r.Method)] {
     values, ok := route.Match(r.URL.Path)
     if ok {
@@ -53,29 +78,32 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
       r.URL.RawQuery = newValues.Encode()
 
       if router.BeforeFilter != nil {
-        router.BeforeFilter(w, r)
+        router.BeforeFilter(lrw, r)
       }
 
-      route.Handler(w, r)
+      route.Handler(lrw, r)
+      lrw.Flush()
       return
     }
   }
 
   if router.NotFoundHandler != nil {
-    router.NotFoundHandler(w, r)
+    router.NotFoundHandler(lrw, r)
   } else {
-    http.NotFound(w, r)
+    http.Error(lrw, "404 page not found", http.StatusNotFound)
   }
+
+  lrw.Flush()
 }
 
-func (router Router) defaultLogFunc(r *http.Request) {
-  fmt.Printf("%s?%s\n", r.URL.Path, r.URL.RawQuery)
+func (router Router) defaultRequestLogFunc(statusCode int, r *http.Request) {
+  fmt.Printf("%d - %s\n", statusCode, r.URL)
 }
 
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
-  router.LogFunc = router.defaultLogFunc
+  router.RequestLogFunc = router.defaultRequestLogFunc
   return router
 }
 

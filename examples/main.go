@@ -4,7 +4,21 @@ import (
   "net/http"
   "github.com/pilu/traffic"
   "fmt"
+  "log"
+  "os"
 )
+
+type AppLogger struct {
+  Name string
+  *log.Logger
+}
+
+func (appLogger *AppLogger) requestLogFunc(statusCode int, r *http.Request) {
+  appLogger.Printf("%s: %d - %s\n", appLogger.Name, statusCode, r.URL)
+}
+
+
+var logger *AppLogger
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, "Hello World\n")
@@ -25,15 +39,18 @@ func customBeforeFilter(w http.ResponseWriter, r *http.Request) {
   w.Header().Add("X-APP-NAME", "My App")
 }
 
-func logFunc(r *http.Request) {
-  fmt.Printf("=> %s?%s\n", r.URL.Path, r.URL.RawQuery)
+func init() {
+  logger = &AppLogger{
+    Name: "Test App",
+    Logger: log.New(os.Stderr, "", log.LstdFlags),
+  }
 }
 
 func main() {
   router := traffic.New()
 
   // Logger
-  router.LogFunc = logFunc
+  router.RequestLogFunc = logger.requestLogFunc
 
   // Routes
   router.Get("/", rootHandler)
