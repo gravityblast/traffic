@@ -14,7 +14,7 @@ type BeforeFilterFunc func(http.ResponseWriter, *http.Request) bool
 type Router struct {
   routes map[HttpMethod][]*Route
   NotFoundHandler HttpHandleFunc
-  BeforeFilter BeforeFilterFunc
+  beforeFilters []BeforeFilterFunc
   RequestLogFunc RequestLogFunc
 }
 
@@ -38,6 +38,10 @@ func (router *Router) Delete(path string, handler HttpHandleFunc) {
 
 func (router *Router) Put(path string, handler HttpHandleFunc) {
   router.Add(HttpMethod("PUT"), path, handler)
+}
+
+func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) {
+  router.beforeFilters = append(router.beforeFilters, beforeFilter)
 }
 
 type LoggedResponseWriter struct {
@@ -79,8 +83,11 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
       continueAfterBeforeFilter := true
 
-      if router.BeforeFilter != nil {
-        continueAfterBeforeFilter = router.BeforeFilter(lrw, r)
+      for _, beforeFilter := range router.beforeFilters {
+        continueAfterBeforeFilter = beforeFilter(lrw, r)
+        if !continueAfterBeforeFilter {
+          break
+        }
       }
 
       if continueAfterBeforeFilter {
@@ -108,6 +115,7 @@ func (router Router) defaultRequestLogFunc(statusCode int, r *http.Request) {
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
+  router.beforeFilters = make([]BeforeFilterFunc, 0)
   router.RequestLogFunc = router.defaultRequestLogFunc
   return router
 }
