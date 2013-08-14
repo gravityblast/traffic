@@ -34,8 +34,10 @@ func customNotFoundHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Page not found: %s\n", r.URL.Path)
 }
 
-func customBeforeFilter(w http.ResponseWriter, r *http.Request) {
+func customBeforeFilter(w http.ResponseWriter, r *http.Request) bool {
   w.Header().Add("X-APP-NAME", "My App")
+
+  return true
 }
 
 func init() {
@@ -59,7 +61,7 @@ func main() {
   router.NotFoundHandler = customNotFoundHandler
 
   // Executed before all handlers
-  router.BeforeFilter = customBeforeFilter
+  router.AddBeforeFilter(customBeforeFilter)
 
   http.Handle("/", router)
   http.ListenAndServe(":7000", nil)
