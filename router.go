@@ -18,26 +18,34 @@ type Router struct {
   RequestLogFunc RequestLogFunc
 }
 
-func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) {
+func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) *Route {
   route := NewRoute(path, handler)
+  router.addRoute(method, route)
+
+  return route
+}
+
+func (router *Router) addRoute(method HttpMethod, route *Route) {
   router.routes[method] = append(router.routes[method], route)
 }
 
-func (router *Router) Get(path string, handler HttpHandleFunc) {
-  router.Add(HttpMethod("GET"), path, handler)
-  router.Add(HttpMethod("HEAD"), path, handler)
+func (router *Router) Get(path string, handler HttpHandleFunc) *Route {
+  route := router.Add(HttpMethod("GET"), path, handler)
+  router.addRoute(HttpMethod("HEAD"), route)
+
+  return route
 }
 
-func (router *Router) Post(path string, handler HttpHandleFunc) {
-  router.Add(HttpMethod("POST"), path, handler)
+func (router *Router) Post(path string, handler HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("POST"), path, handler)
 }
 
-func (router *Router) Delete(path string, handler HttpHandleFunc) {
-  router.Add(HttpMethod("DELETE"), path, handler)
+func (router *Router) Delete(path string, handler HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("DELETE"), path, handler)
 }
 
-func (router *Router) Put(path string, handler HttpHandleFunc) {
-  router.Add(HttpMethod("PUT"), path, handler)
+func (router *Router) Put(path string, handler HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("PUT"), path, handler)
 }
 
 func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) {

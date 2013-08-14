@@ -19,7 +19,8 @@ func TestNew(t *testing.T) {
 func TestAdd(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["GET"]))
-  router.Add(HttpMethod("GET"), "/", httpHandlerExample)
+  route := router.Add(HttpMethod("GET"), "/", httpHandlerExample)
+  assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, 1, len(router.routes["GET"]))
 }
 
@@ -27,29 +28,34 @@ func TestGet(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["GET"]))
   assert.Equal(t, 0, len(router.routes["HEAD"]))
-  router.Get("/", httpHandlerExample)
+  route := router.Get("/", httpHandlerExample)
+  assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, 1, len(router.routes["GET"]))
   assert.Equal(t, 1, len(router.routes["HEAD"]))
+  assert.Equal(t, router.routes["GET"][0], router.routes["HEAD"][0])
 }
 
 func TestPost(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["POST"]))
-  router.Post("/", httpHandlerExample)
+  route := router.Post("/", httpHandlerExample)
+  assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, 1, len(router.routes["POST"]))
 }
 
 func TestDelete(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["DELETE"]))
-  router.Delete("/", httpHandlerExample)
+  route := router.Delete("/", httpHandlerExample)
+  assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, 1, len(router.routes["DELETE"]))
 }
 
 func TestPut(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["PUT"]))
-  router.Put("/", httpHandlerExample)
+  route := router.Put("/", httpHandlerExample)
+  assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, 1, len(router.routes["PUT"]))
 }
 
