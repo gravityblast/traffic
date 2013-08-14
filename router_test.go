@@ -59,6 +59,14 @@ func TestPut(t *testing.T) {
   assert.Equal(t, 1, len(router.routes["PUT"]))
 }
 
+func TestPatch(t *testing.T) {
+  router := New()
+  assert.Equal(t, 0, len(router.routes["PATCH"]))
+  route := router.Patch("/", httpHandlerExample)
+  assert.Type(t, "*traffic.Route", route)
+  assert.Equal(t, 1, len(router.routes["PATCH"]))
+}
+
 func TestAddBeforeFilter(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.beforeFilters))

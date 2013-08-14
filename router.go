@@ -48,6 +48,10 @@ func (router *Router) Put(path string, handler HttpHandleFunc) *Route {
   return router.Add(HttpMethod("PUT"), path, handler)
 }
 
+func (router *Router) Patch(path string, handler HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("PATCH"), path, handler)
+}
+
 func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) {
   router.beforeFilters = append(router.beforeFilters, beforeFilter)
 }
