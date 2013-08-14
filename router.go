@@ -97,7 +97,9 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
       continueAfterBeforeFilter := true
 
-      for _, beforeFilter := range router.beforeFilters {
+      filters := append(router.beforeFilters, route.beforeFilters...)
+
+      for _, beforeFilter := range filters {
         continueAfterBeforeFilter = beforeFilter(lrw, r)
         if !continueAfterBeforeFilter {
           break

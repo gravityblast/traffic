@@ -11,6 +11,10 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, "Hello World\n")
 }
 
+func privatePageHandler(w http.ResponseWriter, r *http.Request) {
+  fmt.Fprint(w, "Hello Private Page\n")
+}
+
 func pageHandler(w http.ResponseWriter, r *http.Request) {
   params := r.URL.Query()
   fmt.Fprintf(w, "Category ID: %s\n", params.Get("category_id"))
@@ -20,6 +24,16 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 func checkApiKey(w http.ResponseWriter, r *http.Request) bool {
   params := r.URL.Query()
   if params.Get("api_key") != "foo" {
+    w.WriteHeader(http.StatusUnauthorized)
+    return false
+  }
+
+  return true
+}
+
+func checkPrivatePageApiKey(w http.ResponseWriter, r *http.Request) bool {
+  params := r.URL.Query()
+  if params.Get("private_api_key") != "bar" {
     w.WriteHeader(http.StatusUnauthorized)
     return false
   }
@@ -46,6 +60,9 @@ func main() {
   // Routes
   router.Get("/", rootHandler)
   router.Get("/categories/:category_id/pages/:id", pageHandler)
+  // "/private" has one more before filter that checks for a second api key (private_api_key)
+  router.Get("/private", privatePageHandler).
+          AddBeforeFilter(checkPrivatePageApiKey)
 
   // Executed before all handlers
   router.AddBeforeFilter(checkApiKey).

@@ -5,6 +5,7 @@ import (
   "regexp"
   "net/http"
   "net/url"
+  "reflect"
   assert "github.com/pilu/miniassert"
 )
 
@@ -59,4 +60,19 @@ func TestMatch(t *testing.T) {
   values, ok := route.Match("/bar")
   assert.False(t, ok)
   assert.Equal(t, values, make(url.Values))
+}
+
+func TestAddBeforeFilterToRoute(t *testing.T) {
+  route := NewRoute("/", httpHandlerExample)
+  assert.Equal(t, 0, len(route.beforeFilters))
+  filterA := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })
+  filterB := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })
+
+  route.AddBeforeFilter(filterA)
+  assert.Equal(t, 1, len(route.beforeFilters))
+  route.AddBeforeFilter(filterB)
+  assert.Equal(t, 2, len(route.beforeFilters))
+
+  assert.Equal(t, reflect.ValueOf(filterA), reflect.ValueOf(route.beforeFilters[0]))
+  assert.Equal(t, reflect.ValueOf(filterB), reflect.ValueOf(route.beforeFilters[1]))
 }

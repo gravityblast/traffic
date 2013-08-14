@@ -12,6 +12,13 @@ type Route struct {
   Path string
   PathRegexp *regexp.Regexp
   Handler HttpHandleFunc
+  beforeFilters []BeforeFilterFunc
+}
+
+func (route *Route) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Route {
+  route.beforeFilters = append(route.beforeFilters, beforeFilter)
+
+  return route
 }
 
 func NewRoute(path string, handler HttpHandleFunc) *Route {

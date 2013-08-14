@@ -82,3 +82,4 @@ func TestAddBeforeFilter(t *testing.T) {
   assert.Equal(t, reflect.ValueOf(filterA), reflect.ValueOf(router.beforeFilters[0]))
   assert.Equal(t, reflect.ValueOf(filterB), reflect.ValueOf(router.beforeFilters[1]))
 }
+
