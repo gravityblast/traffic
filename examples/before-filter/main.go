@@ -48,9 +48,9 @@ func main() {
   router.Get("/categories/:category_id/pages/:id", pageHandler)
 
   // Executed before all handlers
-  router.AddBeforeFilter(checkApiKey)
-  router.AddBeforeFilter(addAppNameHeader)
-  router.AddBeforeFilter(addTimeHeader)
+  router.AddBeforeFilter(checkApiKey).
+         AddBeforeFilter(addAppNameHeader).
+         AddBeforeFilter(addTimeHeader)
 
   http.Handle("/", router)
   http.ListenAndServe(":7000", nil)

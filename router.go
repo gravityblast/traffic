@@ -52,8 +52,10 @@ func (router *Router) Patch(path string, handler HttpHandleFunc) *Route {
   return router.Add(HttpMethod("PATCH"), path, handler)
 }
 
-func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) {
+func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Router {
   router.beforeFilters = append(router.beforeFilters, beforeFilter)
+
+  return router
 }
 
 type LoggedResponseWriter struct {
