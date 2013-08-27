@@ -37,7 +37,10 @@ func (route Route) Match(path string) (url.Values, bool) {
     names := route.PathRegexp.SubexpNames()
     for i := 1; i < len(names); i++ {
       name := names[i]
-      values.Set(name, matches[0][i])
+      value := matches[0][i]
+      if len(name) > 0 && len(value) > 0 {
+        values.Set(name, value)
+      }
     }
 
     return values, true

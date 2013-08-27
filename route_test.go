@@ -62,6 +62,32 @@ func TestMatch(t *testing.T) {
   assert.Equal(t, values, make(url.Values))
 }
 
+func TestMatchWithOptionalSegments(t *testing.T) {
+  routePath := "((/sites/:site_id)?/categories/:category_id)?/posts/:id"
+  tests := [][]string {
+    {
+      "/sites/foo/categories/bar/posts/baz",
+      "category_id=bar&id=baz&site_id=foo",
+    },
+    {
+      "/categories/bar/posts/baz",
+      "category_id=bar&id=baz",
+    },
+    {
+      "/posts/baz",
+      "id=baz",
+    },
+  }
+  route := NewRoute(routePath, httpHandlerExample)
+  for _, opts := range tests {
+    requestPath   := opts[0]
+    expectedQuery := opts[1]
+    values, ok := route.Match(requestPath)
+    assert.True(t, ok)
+    assert.Equal(t, expectedQuery, values.Encode())
+  }
+}
+
 func TestAddBeforeFilterToRoute(t *testing.T) {
   route := NewRoute("/", httpHandlerExample)
   assert.Equal(t, 0, len(route.beforeFilters))
