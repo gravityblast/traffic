@@ -17,7 +17,6 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func customNotFoundHandler(w http.ResponseWriter, r *http.Request) {
-  w.WriteHeader(http.StatusNotFound)
   fmt.Fprintf(w, "Page not found: %s\n", r.URL.Path)
 }
 

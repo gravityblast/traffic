@@ -4,6 +4,7 @@ import (
   "net/http"
   "os"
   "log"
+  "fmt"
 )
 
 type HttpMethod string
@@ -76,6 +77,14 @@ func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Router {
   return router
 }
 
+func (router *Router) handleNotFound (w http.ResponseWriter, r *http.Request) {
+  if router.NotFoundHandler != nil {
+    router.NotFoundHandler(w, r)
+  } else {
+    fmt.Fprint(w, "404 page not found")
+  }
+}
+
 func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
   w := &AppResponseWriter{
     ResponseWriter: rw,
@@ -84,6 +93,10 @@ func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
   nextMiddlewareFunc := router.MiddlewareEnumerator()
   if nextMiddleware := nextMiddlewareFunc(); nextMiddleware != nil {
     nextMiddleware.ServeHTTP(w, r, nextMiddlewareFunc)
+  }
+
+  if w.StatusCode() == http.StatusNotFound {
+    router.handleNotFound(w, r)
   }
 }
 
