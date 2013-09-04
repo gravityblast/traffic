@@ -14,6 +14,10 @@ func TestNew(t *testing.T) {
 
   emptyMap := make(map[HttpMethod][]*Route)
   assert.Equal(t, emptyMap, router.routes)
+
+  assert.Equal(t, 2, len(router.middlewares))
+  assert.Type(t, "*traffic.LoggerMiddleware", router.middlewares[0])
+  assert.Type(t, "*traffic.RouterMiddleware", router.middlewares[1])
 }
 
 func TestAdd(t *testing.T) {

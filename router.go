@@ -2,20 +2,38 @@ package traffic
 
 import (
   "net/http"
-  "fmt"
+  "os"
+  "log"
 )
-
-type RequestLogFunc func(int, *http.Request)
 
 type HttpMethod string
 
 type BeforeFilterFunc func(http.ResponseWriter, *http.Request) bool
 
+type Middleware interface {
+  ServeHTTP(http.ResponseWriter, *http.Request, func() Middleware) (http.ResponseWriter, *http.Request)
+}
+
 type Router struct {
   routes map[HttpMethod][]*Route
   NotFoundHandler HttpHandleFunc
   beforeFilters []BeforeFilterFunc
-  RequestLogFunc RequestLogFunc
+  middlewares []Middleware
+}
+
+func (router Router) MiddlewareEnumerator() func() Middleware {
+  index := 0
+  next := func() Middleware {
+    if len(router.middlewares) > index {
+      nextMiddleware := router.middlewares[index]
+      index++
+      return nextMiddleware
+    }
+
+    return nil
+  }
+
+  return next
 }
 
 func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) *Route {
@@ -58,81 +76,32 @@ func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Router {
   return router
 }
 
-type LoggedResponseWriter struct {
-  http.ResponseWriter
-  request *http.Request
-  log RequestLogFunc
-  statusCode int
-}
-
-func (loggedResponseWriter *LoggedResponseWriter) WriteHeader(statusCode int) {
-  loggedResponseWriter.statusCode = statusCode
-  loggedResponseWriter.ResponseWriter.WriteHeader(statusCode)
-}
-
-func (loggedResponseWriter LoggedResponseWriter) Flush() {
-  statusCode := loggedResponseWriter.statusCode
-  if statusCode == 0 {
-    statusCode = http.StatusOK
-  }
-  loggedResponseWriter.log(statusCode, loggedResponseWriter.request)
-}
-
-func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  lrw := &LoggedResponseWriter{
-    ResponseWriter: w,
-    request: r,
-    log: router.RequestLogFunc,
+func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+  w := &AppResponseWriter{
+    ResponseWriter: rw,
   }
 
-  for _, route := range router.routes[HttpMethod(r.Method)] {
-    values, ok := route.Match(r.URL.Path)
-    if ok {
-      newValues := r.URL.Query()
-      for k, v := range values {
-        newValues[k] = v
-      }
-
-      r.URL.RawQuery = newValues.Encode()
-
-      continueAfterBeforeFilter := true
-
-      filters := append(router.beforeFilters, route.beforeFilters...)
-
-      for _, beforeFilter := range filters {
-        continueAfterBeforeFilter = beforeFilter(lrw, r)
-        if !continueAfterBeforeFilter {
-          break
-        }
-      }
-
-      if continueAfterBeforeFilter {
-        route.Handler(lrw, r)
-      }
-
-      lrw.Flush()
-      return
-    }
+  nextMiddlewareFunc := router.MiddlewareEnumerator()
+  if nextMiddleware := nextMiddlewareFunc(); nextMiddleware != nil {
+    nextMiddleware.ServeHTTP(w, r, nextMiddlewareFunc)
   }
-
-  if router.NotFoundHandler != nil {
-    router.NotFoundHandler(lrw, r)
-  } else {
-    http.Error(lrw, "404 page not found", http.StatusNotFound)
-  }
-
-  lrw.Flush()
-}
-
-func (router Router) defaultRequestLogFunc(statusCode int, r *http.Request) {
-  fmt.Printf("%d - %s\n", statusCode, r.URL)
 }
 
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
   router.beforeFilters = make([]BeforeFilterFunc, 0)
-  router.RequestLogFunc = router.defaultRequestLogFunc
+  router.middlewares = make([]Middleware, 0)
+
+  loggerMiddleware := &LoggerMiddleware{
+    router: router,
+    logger: log.New(os.Stderr, "", log.LstdFlags),
+  }
+  router.middlewares = append(router.middlewares, loggerMiddleware)
+
+  routerMiddleware := &RouterMiddleware{ router }
+  router.middlewares = append(router.middlewares, routerMiddleware)
+
   return router
 }
 
