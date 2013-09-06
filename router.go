@@ -7,12 +7,16 @@ import (
   "fmt"
 )
 
+const ENV_DEVELOPMENT = "development"
+
 type HttpMethod string
 
 type BeforeFilterFunc func(http.ResponseWriter, *http.Request) bool
 
+type NextMiddlewareFunc func() Middleware
+
 type Middleware interface {
-  ServeHTTP(http.ResponseWriter, *http.Request, func() Middleware) (http.ResponseWriter, *http.Request)
+  ServeHTTP(http.ResponseWriter, *http.Request, NextMiddlewareFunc) (http.ResponseWriter, *http.Request)
 }
 
 type Router struct {
@@ -20,6 +24,7 @@ type Router struct {
   NotFoundHandler HttpHandleFunc
   beforeFilters []BeforeFilterFunc
   middlewares []Middleware
+  env map[string]interface{}
 }
 
 func (router Router) MiddlewareEnumerator() func() Middleware {
@@ -86,9 +91,7 @@ func (router *Router) handleNotFound (w http.ResponseWriter, r *http.Request) {
 }
 
 func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-  w := &AppResponseWriter{
-    ResponseWriter: rw,
-  }
+  w := newAppResponseWriter(rw, &router.env)
 
   nextMiddlewareFunc := router.MiddlewareEnumerator()
   if nextMiddleware := nextMiddlewareFunc(); nextMiddleware != nil {
@@ -100,20 +103,39 @@ func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
   }
 }
 
+func (router *Router) AddMiddleware(middleware Middleware) {
+  router.middlewares = append([]Middleware{middleware}, router.middlewares...)
+}
+
+func (router *Router) SetVar(key string, value interface{}) {
+  router.env[key] = value
+}
+
+func (router *Router) GetVar(key string) interface{} {
+  return router.env[key]
+}
+
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
   router.beforeFilters = make([]BeforeFilterFunc, 0)
   router.middlewares = make([]Middleware, 0)
+  router.env = make(map[string]interface{})
+
+  routerMiddleware := &RouterMiddleware{ router }
+  router.AddMiddleware(routerMiddleware)
 
   loggerMiddleware := &LoggerMiddleware{
     router: router,
     logger: log.New(os.Stderr, "", log.LstdFlags),
   }
-  router.middlewares = append(router.middlewares, loggerMiddleware)
+  router.AddMiddleware(loggerMiddleware)
 
-  routerMiddleware := &RouterMiddleware{ router }
-  router.middlewares = append(router.middlewares, routerMiddleware)
+  env := os.Getenv("TRAFFIC_ENV")
+  if env == "" {
+    env = ENV_DEVELOPMENT
+  }
+  router.SetVar("env", env)
 
   return router
 }

@@ -11,12 +11,11 @@ type LoggerMiddleware struct {
   logger *log.Logger
 }
 
-func (loggerMiddleware *LoggerMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, nextMiddlewareFunc func() Middleware) (http.ResponseWriter, *http.Request) {
-  nextMiddleware := nextMiddlewareFunc()
+func (loggerMiddleware *LoggerMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next NextMiddlewareFunc) (http.ResponseWriter, *http.Request) {
   startTime := time.Now()
 
-  if nextMiddleware != nil {
-    w, r = nextMiddleware.ServeHTTP(w, r, nextMiddlewareFunc)
+  if nextMiddleware := next(); nextMiddleware != nil {
+    w, r = nextMiddleware.ServeHTTP(w, r, next)
   }
 
   duration := time.Since(startTime).Seconds()
