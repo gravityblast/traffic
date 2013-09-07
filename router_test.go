@@ -18,6 +18,9 @@ func TestNew(t *testing.T) {
   assert.Equal(t, 2, len(router.middlewares))
   assert.Type(t, "*traffic.LoggerMiddleware", router.middlewares[0])
   assert.Type(t, "*traffic.RouterMiddleware", router.middlewares[1])
+
+  assert.Equal(t, 1, len(router.env))
+  assert.Equal(t, "development", router.env["env"].(string))
 }
 
 func TestAdd(t *testing.T) {
@@ -87,3 +90,14 @@ func TestAddBeforeFilter(t *testing.T) {
   assert.Equal(t, reflect.ValueOf(filterB), reflect.ValueOf(router.beforeFilters[1]))
 }
 
+func TestSetVar(t *testing.T) {
+  router := New()
+  router.SetVar("foo", "bar")
+  assert.Equal(t, "bar", router.env["foo"])
+}
+
+func TestGetVar(t *testing.T) {
+  router := New()
+  router.env["foo"] = "bar"
+  assert.Equal(t, "bar", router.GetVar("foo"))
+}
