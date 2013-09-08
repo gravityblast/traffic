@@ -21,7 +21,7 @@ func TestNewRoute(t *testing.T) {
   assert.Equal(t, expectedPathRegexp, route.PathRegexp)
 }
 
-func TestMatch(t *testing.T) {
+func TestRoute_Match(t *testing.T) {
   tests := [][]string {
     {
       "/",
@@ -62,7 +62,7 @@ func TestMatch(t *testing.T) {
   assert.Equal(t, values, make(url.Values))
 }
 
-func TestMatchWithOptionalSegments(t *testing.T) {
+func TestRoute_Match_WithOptionalSegments(t *testing.T) {
   routePath := "((/sites/:site_id)?/categories/:category_id)?/posts/:id"
   tests := [][]string {
     {
@@ -88,7 +88,7 @@ func TestMatchWithOptionalSegments(t *testing.T) {
   }
 }
 
-func TestAddBeforeFilterToRoute(t *testing.T) {
+func TestRoute_AddBeforeFilterToRoute(t *testing.T) {
   route := NewRoute("/", httpHandlerExample)
   assert.Equal(t, 0, len(route.beforeFilters))
   filterA := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })

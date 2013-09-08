@@ -23,7 +23,7 @@ func TestNew(t *testing.T) {
   assert.Equal(t, "development", router.env["env"].(string))
 }
 
-func TestAdd(t *testing.T) {
+func TestRouter_Add(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["GET"]))
   route := router.Add(HttpMethod("GET"), "/", httpHandlerExample)
@@ -31,7 +31,7 @@ func TestAdd(t *testing.T) {
   assert.Equal(t, 1, len(router.routes["GET"]))
 }
 
-func TestGet(t *testing.T) {
+func TestRouter_Get(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["GET"]))
   assert.Equal(t, 0, len(router.routes["HEAD"]))
@@ -42,7 +42,7 @@ func TestGet(t *testing.T) {
   assert.Equal(t, router.routes["GET"][0], router.routes["HEAD"][0])
 }
 
-func TestPost(t *testing.T) {
+func TestRoute_Post(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["POST"]))
   route := router.Post("/", httpHandlerExample)
@@ -50,7 +50,7 @@ func TestPost(t *testing.T) {
   assert.Equal(t, 1, len(router.routes["POST"]))
 }
 
-func TestDelete(t *testing.T) {
+func TestRouter_Delete(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["DELETE"]))
   route := router.Delete("/", httpHandlerExample)
@@ -58,7 +58,7 @@ func TestDelete(t *testing.T) {
   assert.Equal(t, 1, len(router.routes["DELETE"]))
 }
 
-func TestPut(t *testing.T) {
+func TestRouter_Put(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["PUT"]))
   route := router.Put("/", httpHandlerExample)
@@ -66,7 +66,7 @@ func TestPut(t *testing.T) {
   assert.Equal(t, 1, len(router.routes["PUT"]))
 }
 
-func TestPatch(t *testing.T) {
+func TestRouter_Patch(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.routes["PATCH"]))
   route := router.Patch("/", httpHandlerExample)
@@ -74,7 +74,7 @@ func TestPatch(t *testing.T) {
   assert.Equal(t, 1, len(router.routes["PATCH"]))
 }
 
-func TestAddBeforeFilter(t *testing.T) {
+func TestRouter_AddBeforeFilter(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.beforeFilters))
 
@@ -90,13 +90,13 @@ func TestAddBeforeFilter(t *testing.T) {
   assert.Equal(t, reflect.ValueOf(filterB), reflect.ValueOf(router.beforeFilters[1]))
 }
 
-func TestSetVar(t *testing.T) {
+func TestRouter_SetVar(t *testing.T) {
   router := New()
   router.SetVar("foo", "bar")
   assert.Equal(t, "bar", router.env["foo"])
 }
 
-func TestGetVar(t *testing.T) {
+func TestRouter_GetVar(t *testing.T) {
   router := New()
   router.env["foo"] = "bar"
   assert.Equal(t, "bar", router.GetVar("foo"))
