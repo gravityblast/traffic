@@ -4,6 +4,7 @@ import (
   "fmt"
   "github.com/pilu/traffic"
   "net/http"
+  "log"
 )
 
 type PingMiddleware struct {}
@@ -29,6 +30,9 @@ func (c *PingMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
 
 func root(w http.ResponseWriter, r *http.Request) {
   arw := w.(*traffic.AppResponseWriter)
+
+  logger := arw.GetVar("logger").(*log.Logger)
+  logger.Printf("Hello")
 
   fmt.Fprintf(w, "Global var foo: %v\n", arw.GetVar("foo"))
   fmt.Fprintf(w, "Middleware var PING: %v\n", arw.GetVar("ping"))

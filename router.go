@@ -125,17 +125,26 @@ func New() *Router {
   routerMiddleware := &RouterMiddleware{ router }
   router.AddMiddleware(routerMiddleware)
 
-  loggerMiddleware := &LoggerMiddleware{
-    router: router,
-    logger: log.New(os.Stderr, "", log.LstdFlags),
-  }
-  router.AddMiddleware(loggerMiddleware)
+  // Logger
+  logger := log.New(os.Stderr, "", log.LstdFlags)
+  router.SetVar("logger", logger)
 
+  // Environment
   env := os.Getenv("TRAFFIC_ENV")
   if env == "" {
     env = ENV_DEVELOPMENT
   }
   router.SetVar("env", env)
+
+  // Add useful middlewares for development
+  if env == ENV_DEVELOPMENT {
+    loggerMiddleware := &LoggerMiddleware{
+      router: router,
+      logger: logger,
+    }
+    router.AddMiddleware(loggerMiddleware)
+  }
+
 
   return router
 }
