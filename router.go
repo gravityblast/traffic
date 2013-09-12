@@ -138,13 +138,16 @@ func New() *Router {
 
   // Add useful middlewares for development
   if env == ENV_DEVELOPMENT {
+    // Logger middleware
     loggerMiddleware := &LoggerMiddleware{
       router: router,
       logger: logger,
     }
     router.AddMiddleware(loggerMiddleware)
-  }
 
+    // ShowErrors middleware
+    router.AddMiddleware(&ShowErrorsMiddleware{})
+  }
 
   return router
 }
