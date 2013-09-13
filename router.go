@@ -92,6 +92,7 @@ func (router *Router) handleNotFound (w http.ResponseWriter, r *http.Request) {
 
 func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
   w := newAppResponseWriter(rw, &router.env)
+  w.Header().Set("Content-Type", "text/html")
 
   nextMiddlewareFunc := router.MiddlewareEnumerator()
   if nextMiddleware := nextMiddlewareFunc(); nextMiddleware != nil {
