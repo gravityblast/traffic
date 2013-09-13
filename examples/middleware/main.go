@@ -34,15 +34,15 @@ func root(w http.ResponseWriter, r *http.Request) {
   logger := arw.GetVar("logger").(*log.Logger)
   logger.Printf("Hello")
 
-  fmt.Fprintf(w, "Global var foo: %v\n", arw.GetVar("foo"))
-  fmt.Fprintf(w, "Middleware var PING: %v\n", arw.GetVar("ping"))
+  fmt.Fprintf(w, "Router var foo: %v\n", arw.GetVar("foo"))
+  fmt.Fprintf(w, "Middleware var ping: %v\n", arw.GetVar("ping"))
 }
 
 func main() {
   t := traffic.New()
   // Add PingMiddleware
   t.AddMiddleware(&PingMiddleware{})
-  // Set global var "foo"
+  // Set router var "foo"
   t.SetVar("foo", "bar")
   // Add root handler
   t.Get("/", root)
