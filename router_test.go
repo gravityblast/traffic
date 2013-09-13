@@ -93,13 +93,19 @@ func TestRouter_AddBeforeFilter(t *testing.T) {
 }
 
 func TestRouter_SetVar(t *testing.T) {
+  resetGlobalEnv()
   router := New()
   router.SetVar("foo", "bar")
   assert.Equal(t, "bar", router.env["foo"])
+  resetGlobalEnv()
 }
 
 func TestRouter_GetVar(t *testing.T) {
+  resetGlobalEnv()
   router := New()
-  router.env["foo"] = "bar"
-  assert.Equal(t, "bar", router.GetVar("foo"))
+  env["global-foo"] = "global-foo"
+  assert.Equal(t, "global-foo", router.GetVar("global-foo"))
+  router.env["global-foo"] = "router-foo"
+  assert.Equal(t, "router-foo", router.GetVar("global-foo"))
+  resetGlobalEnv()
 }

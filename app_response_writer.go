@@ -8,7 +8,7 @@ type AppResponseWriter struct {
   http.ResponseWriter
   statusCode int
   env map[string]interface{}
-  globalEnv *map[string]interface{}
+  routerEnv *map[string]interface{}
 }
 
 func (w *AppResponseWriter) WriteHeader(statusCode int) {
@@ -25,20 +25,28 @@ func (w *AppResponseWriter) SetVar(key string, value interface{}) {
 }
 
 func (w *AppResponseWriter) GetVar(key string) interface{} {
+  // local env
   value := w.env[key]
   if value != nil {
     return value
   }
 
-  return (*w.globalEnv)[key]
+  // router env
+  value = (*w.routerEnv)[key]
+  if value != nil {
+    return value
+  }
+
+  // global env
+  return GetVar(key)
 }
 
-func newAppResponseWriter(w http.ResponseWriter, globalEnv *map[string]interface{}) *AppResponseWriter {
+func newAppResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface{}) *AppResponseWriter {
   arw := &AppResponseWriter{
     w,
     http.StatusOK,
     make(map[string]interface{}),
-    globalEnv,
+    routerEnv,
   }
 
   return arw

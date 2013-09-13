@@ -17,11 +17,11 @@ func newTestAppResponseWriter(globalEnv *map[string]interface{}) *AppResponseWri
 }
 
 func TestAppResponseWriter(t *testing.T) {
-  globalEnv := make(map[string]interface{})
-  arw := newTestAppResponseWriter(&globalEnv)
+  routerEnv := make(map[string]interface{})
+  arw := newTestAppResponseWriter(&routerEnv)
   assert.Equal(t, http.StatusOK, arw.statusCode)
   assert.Equal(t, 0, len(arw.env))
-  assert.Equal(t, &globalEnv, arw.globalEnv)
+  assert.Equal(t, &routerEnv, arw.routerEnv)
 }
 
 func TestAppResponseWriter_SetVar(t *testing.T) {
@@ -32,16 +32,19 @@ func TestAppResponseWriter_SetVar(t *testing.T) {
 }
 
 func TestAppResponseWriter_GetVar(t *testing.T) {
-  globalEnv := map[string]interface{} {
-    "global_foo": "global_bar",
-  }
-  arw := newTestAppResponseWriter(&globalEnv)
-  arw.env["foo"] = "bar"
+  resetGlobalEnv()
 
-  assert.Equal(t, "bar", arw.GetVar("foo"))
-  assert.Equal(t, "global_bar", arw.GetVar("global_foo"))
+  routerEnv := map[string]interface{} {}
+  arw := newTestAppResponseWriter(&routerEnv)
 
-  arw.SetVar("global_foo", "local_bar")
-  assert.Equal(t, "global_bar", (*arw.globalEnv)["global_foo"])
-  assert.Equal(t, "local_bar", arw.GetVar("global_foo"))
+  env["global-foo"] = "global-bar"
+  assert.Equal(t, "global-bar", arw.GetVar("global-foo"))
+
+  routerEnv["global-foo"] = "router-bar"
+  assert.Equal(t, "router-bar", arw.GetVar("global-foo"))
+
+  arw.env["global-foo"] = "local-bar"
+  assert.Equal(t, "local-bar", arw.GetVar("global-foo"))
+
+  resetGlobalEnv()
 }

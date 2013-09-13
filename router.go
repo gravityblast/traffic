@@ -113,7 +113,12 @@ func (router *Router) SetVar(key string, value interface{}) {
 }
 
 func (router *Router) GetVar(key string) interface{} {
-  return router.env[key]
+  value := router.env[key]
+  if value != nil {
+    return value
+  }
+
+  return GetVar(key)
 }
 
 func New() *Router {

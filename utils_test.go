@@ -6,6 +6,24 @@ import (
   assert "github.com/pilu/miniassert"
 )
 
+func resetGlobalEnv() {
+  env = make(map[string]interface{})
+}
+
+func TestSetVar(t *testing.T) {
+  resetGlobalEnv()
+  SetVar("foo", "bar")
+  assert.Equal(t, "bar", env["foo"])
+  resetGlobalEnv()
+}
+
+func TestGetVar(t *testing.T) {
+  resetGlobalEnv()
+  env["foo-2"] = "bar-2"
+  assert.Equal(t, "bar-2", GetVar("foo-2"))
+  resetGlobalEnv()
+}
+
 func TestPathToRegexpString(t *testing.T) {
   tests := [][]string{
     {
