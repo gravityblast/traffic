@@ -3,6 +3,8 @@ package traffic
 import (
   "fmt"
   "regexp"
+  "os"
+  "strings"
 )
 
 var env map[string]interface{}
@@ -16,7 +18,16 @@ func SetVar(key string, value interface{}) {
 }
 
 func GetVar(key string) interface{} {
-  return env[key]
+  if value := env[key]; value != nil {
+    return value
+  }
+
+  envKey := fmt.Sprintf("TRAFFIC_%s", strings.ToUpper(key))
+  if value := os.Getenv(envKey); value != "" {
+    return value
+  }
+
+  return nil
 }
 
 func pathToRegexpString(path string) string {

@@ -3,6 +3,7 @@ package traffic
 
 import (
   "testing"
+  "os"
   assert "github.com/pilu/miniassert"
 )
 
@@ -21,6 +22,12 @@ func TestGetVar(t *testing.T) {
   resetGlobalEnv()
   env["foo-2"] = "bar-2"
   assert.Equal(t, "bar-2", GetVar("foo-2"))
+
+  assert.Nil(t, GetVar("os_foo"))
+  os.Setenv("TRAFFIC_OS_FOO", "bar")
+  assert.Equal(t, "bar", GetVar("os_foo"))
+
+
   resetGlobalEnv()
 }
 
