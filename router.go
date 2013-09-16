@@ -140,6 +140,7 @@ func New() *Router {
   if env == "" {
     env = ENV_DEVELOPMENT
   }
+
   router.SetVar("env", env)
 
   // Add useful middlewares for development
@@ -154,6 +155,8 @@ func New() *Router {
     // ShowErrors middleware
     router.AddMiddleware(&ShowErrorsMiddleware{})
   }
+
+  initTemplateManager()
 
   return router
 }
