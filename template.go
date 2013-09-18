@@ -1,10 +1,12 @@
 package traffic
 
 import (
+  "os"
+  "fmt"
   "html/template"
   "net/http"
-  "os"
   "path/filepath"
+  "io/ioutil"
 )
 
 const DefaultViewsPath = "views"
@@ -14,37 +16,60 @@ type RenderFunc func(w http.ResponseWriter, template string, data interface{})
 var templateManager *TemplateManager
 
 type TemplateManager struct {
-  templates *template.Template
-  templatesReadError error
+  viewsBasePath       string
+  templates           *template.Template
+  renderFunc          RenderFunc
+  templatesReadError  error
   templatesParseError error
-  renderFunc RenderFunc
 }
 
 func (t *TemplateManager) loadTemplates() {
-  paths := t.getTemplatesPaths()
-  t.templates, t.templatesParseError = template.ParseFiles(paths...)
-  if t.templatesParseError != nil {
-    t.renderFunc = t.RenderTemplateErrors
+  t.templates = template.New("templates")
+  if t.viewsBasePath == "" {
+    panic("views base path is blank")
   }
+  filepath.Walk(t.viewsBasePath, t.WalkFunc)
 }
 
-func (t *TemplateManager) getTemplatesPaths() []string {
-  views := make([]string, 0)
-  filepath.Walk(t.templatesPath(), func(path string, info os.FileInfo, err error) (e error) {
+func (t *TemplateManager) WalkFunc(path string, info os.FileInfo, err error) error {
+  if err != nil {
+    t.templatesReadError = err
+    t.renderFunc = t.RenderTemplateErrors
+
+    return err
+  }
+
+  if extension := filepath.Ext(path); !info.IsDir() && extension == ".tmpl" {
+    relativePath, err  := filepath.Rel(t.viewsBasePath, path)
     if err != nil {
       t.templatesReadError = err
       t.renderFunc = t.RenderTemplateErrors
-    } else {
-      fileInfo, err := os.Stat(path)
-      if err == nil && !fileInfo.IsDir() && filepath.Ext(path) == ".tmpl" {
-        views = append(views, path)
-      }
+
+      return err
     }
 
-    return
-  })
+    templateName := relativePath[0:(len(relativePath) - len(extension))]
+    t.addTemplate(templateName, path)
+  }
 
-  return views
+  return nil
+}
+
+func (t *TemplateManager) addTemplate(name, path string) {
+  fileContent, err := ioutil.ReadFile(path)
+  if err != nil {
+    t.templatesReadError = err
+    t.renderFunc = t.RenderTemplateErrors
+
+    return
+  }
+
+  templateContent := fmt.Sprintf(`{{ define "%s" }}%s{{ end }}`, name, fileContent)
+  tmpl, err := t.templates.Parse(templateContent)
+  if tmpl == nil && err != nil {
+    t.templatesParseError = err
+    t.renderFunc = t.RenderTemplateErrors
+  }
 }
 
 func (t *TemplateManager) templatesPath() string {
@@ -74,6 +99,12 @@ func (t *TemplateManager) RenderTemplateErrors(w http.ResponseWriter, template s
 
 func newTemplateManager() *TemplateManager {
   t := &TemplateManager{}
+  if path := GetVar("views"); path != nil {
+    t.viewsBasePath = path.(string)
+  } else {
+    t.viewsBasePath = DefaultViewsPath
+  }
+
   t.renderFunc = t.Render
   t.loadTemplates()
 
