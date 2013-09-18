@@ -10,7 +10,7 @@ type ResponseData struct {
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-  responseData := &ResponseData{ "ResponseWorld" }
+  responseData := &ResponseData{ "Hello World" }
   traffic.Render(w, "index", responseData)
 }
 

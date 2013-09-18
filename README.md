@@ -12,6 +12,7 @@ Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.o
   * [Before Filters](https://github.com/pilu/traffic/blob/master/examples/before-filter/main.go)
   * [Custom not found handler](https://github.com/pilu/traffic/blob/master/examples/not-found/main.go)
   * [Middlewares](https://github.com/pilu/traffic/blob/master/examples/middleware/main.go)
+  * [Templates/Views](https://github.com/pilu/traffic/tree/master/examples/templates)
 
 ## Usage:
 
