@@ -136,12 +136,10 @@ func New() *Router {
   router.SetVar("logger", logger)
 
   // Environment
-  env := os.Getenv("TRAFFIC_ENV")
-  if env == "" {
-    env = ENV_DEVELOPMENT
+  env, ok := GetVar("env").(string)
+  if !ok || env == "" {
+    router.SetVar("env", ENV_DEVELOPMENT)
   }
-
-  router.SetVar("env", env)
 
   // Add useful middlewares for development
   if env == ENV_DEVELOPMENT {
