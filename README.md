@@ -1,5 +1,7 @@
 # Traffic
 
+[![Build Status](https://travis-ci.org/pilu/traffic.png?branch=master)](https://travis-ci.org/pilu/traffic)
+
 Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.org/ "The Go programming language").
 
 ## Installation
