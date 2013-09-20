@@ -138,7 +138,8 @@ func New() *Router {
   // Environment
   env, ok := GetVar("env").(string)
   if !ok || env == "" {
-    router.SetVar("env", ENV_DEVELOPMENT)
+    env = ENV_DEVELOPMENT
+    router.SetVar("env", env)
   }
 
   // Add useful middlewares for development
