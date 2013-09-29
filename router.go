@@ -5,9 +5,12 @@ import (
   "os"
   "log"
   "fmt"
+  "github.com/pilu/config"
 )
 
 const ENV_DEVELOPMENT = "development"
+
+const DEFAULT_CONFIG_FILE = "traffic.conf"
 
 type HttpMethod string
 
@@ -121,6 +124,22 @@ func (router *Router) GetVar(key string) interface{} {
   return GetVar(key)
 }
 
+func (router *Router) loadConfigurationsFromFile(path, env string) {
+  mainSectionName := "main"
+  sections, err := config.ParseFile(path, mainSectionName)
+  if err != nil {
+    panic(err)
+  }
+
+  for section, options := range sections {
+    if section == mainSectionName || section == env {
+      for key, value := range options {
+        router.SetVar(key, value)
+      }
+    }
+  }
+}
+
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
@@ -137,7 +156,7 @@ func New() *Router {
 
   // Environment
   env, ok := GetVar("env").(string)
-  if !ok || env == "" {
+  if !ok {
     env = ENV_DEVELOPMENT
     router.SetVar("env", env)
   }
@@ -153,6 +172,14 @@ func New() *Router {
 
     // ShowErrors middleware
     router.AddMiddleware(&ShowErrorsMiddleware{})
+  }
+
+  // configuration
+  configFile, ok := GetVar("config_file").(string)
+  if ok {
+    router.loadConfigurationsFromFile(configFile, env)
+  } else if _, err := os.Stat(DEFAULT_CONFIG_FILE); err == nil {
+    router.loadConfigurationsFromFile(DEFAULT_CONFIG_FILE, env)
   }
 
   initTemplateManager()
