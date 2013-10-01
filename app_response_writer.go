@@ -9,6 +9,19 @@ type AppResponseWriter struct {
   statusCode int
   env map[string]interface{}
   routerEnv *map[string]interface{}
+  beforeWriteHandlers []func()
+  alreadyWritten bool
+}
+
+func (w *AppResponseWriter) Write(data []byte) (n int, err error) {
+  if !w.alreadyWritten {
+    for _, handler := range w.beforeWriteHandlers {
+      handler()
+    }
+    w.alreadyWritten = true
+  }
+
+  return w.ResponseWriter.Write(data)
 }
 
 func (w *AppResponseWriter) WriteHeader(statusCode int) {
@@ -41,12 +54,17 @@ func (w *AppResponseWriter) GetVar(key string) interface{} {
   return GetVar(key)
 }
 
+func (w *AppResponseWriter) AddBeforeWriteHandler(handler func()) {
+  w.beforeWriteHandlers = append(w.beforeWriteHandlers, handler)
+}
+
 func newAppResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface{}) *AppResponseWriter {
   arw := &AppResponseWriter{
-    w,
-    http.StatusOK,
-    make(map[string]interface{}),
-    routerEnv,
+    ResponseWriter:       w,
+    statusCode:           http.StatusOK,
+    env:                  make(map[string]interface{}),
+    routerEnv:            routerEnv,
+    beforeWriteHandlers:  make([]func(), 0),
   }
 
   return arw
