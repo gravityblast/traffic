@@ -10,15 +10,15 @@ type AppResponseWriter struct {
   env map[string]interface{}
   routerEnv *map[string]interface{}
   beforeWriteHandlers []func()
-  alreadyWritten bool
+  wroteBody bool
 }
 
 func (w *AppResponseWriter) Write(data []byte) (n int, err error) {
-  if !w.alreadyWritten {
+  if !w.wroteBody {
     for _, handler := range w.beforeWriteHandlers {
       handler()
     }
-    w.alreadyWritten = true
+    w.wroteBody = true
   }
 
   return w.ResponseWriter.Write(data)
