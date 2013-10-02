@@ -1,0 +1,12 @@
+body {
+  text-align: center;
+  background: #ccc;
+}
+
+.container {
+  background: #fff;
+  width: 800px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 5px 10px;
+}
