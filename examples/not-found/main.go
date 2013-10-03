@@ -6,17 +6,17 @@ import (
   "fmt"
 )
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func rootHandler(w traffic.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, "Hello World\n")
 }
 
-func pageHandler(w http.ResponseWriter, r *http.Request) {
+func pageHandler(w traffic.ResponseWriter, r *http.Request) {
   params := r.URL.Query()
   fmt.Fprintf(w, "Category ID: %s\n", params.Get("category_id"))
   fmt.Fprintf(w, "Page ID: %s\n", params.Get("id"))
 }
 
-func customNotFoundHandler(w http.ResponseWriter, r *http.Request) {
+func customNotFoundHandler(w traffic.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Page not found: %s\n", r.URL.Path)
 }
 

@@ -81,8 +81,8 @@ func TestRouter_AddBeforeFilter(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.beforeFilters))
 
-  filterA := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })
-  filterB := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })
+  filterA := BeforeFilterFunc(func(w ResponseWriter, r *http.Request) bool { return true })
+  filterB := BeforeFilterFunc(func(w ResponseWriter, r *http.Request) bool { return true })
 
   router.AddBeforeFilter(filterA)
   assert.Equal(t, 1, len(router.beforeFilters))

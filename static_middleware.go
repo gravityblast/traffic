@@ -10,7 +10,7 @@ type StaticMiddleware struct {
   publicPath string
 }
 
-func (middleware *StaticMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next NextMiddlewareFunc) (http.ResponseWriter, *http.Request) {
+func (middleware *StaticMiddleware) ServeHTTP(w ResponseWriter, r *http.Request, next NextMiddlewareFunc) (ResponseWriter, *http.Request) {
   path := filepath.Join(middleware.publicPath, r.URL.Path)
   if info, err := os.Stat(path); err == nil && !info.IsDir() {
     w.Header().Del("Content-Type")

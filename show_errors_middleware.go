@@ -153,7 +153,7 @@ func (middleware ShowErrorsMiddleware) readErrorFileLines(filePath string, error
   return lines
 }
 
-func (middleware ShowErrorsMiddleware) RenderError(w http.ResponseWriter, r *http.Request, err interface{}, stack []byte) {
+func (middleware ShowErrorsMiddleware) RenderError(w ResponseWriter, r *http.Request, err interface{}, stack []byte) {
   _, filePath, line, _ := runtime.Caller(5)
 
   data := map[string]interface{} {
@@ -171,7 +171,7 @@ func (middleware ShowErrorsMiddleware) RenderError(w http.ResponseWriter, r *htt
   tpl.Execute(w, data)
 }
 
-func (middleware ShowErrorsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next NextMiddlewareFunc) (http.ResponseWriter, *http.Request) {
+func (middleware ShowErrorsMiddleware) ServeHTTP(w ResponseWriter, r *http.Request, next NextMiddlewareFunc) (ResponseWriter, *http.Request) {
   defer func() {
     if err := recover(); err != nil {
       const size = 4096

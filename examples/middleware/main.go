@@ -12,7 +12,7 @@ type PingMiddleware struct {}
 // If the request path is "/ping", it writes PONG in the response and returns without calling the next middleware
 // Otherwise it sets the variable "PING" with PONG as value and calls the next  middleware.
 // The next middleware can
-func (c *PingMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next traffic.NextMiddlewareFunc) (http.ResponseWriter, *http.Request) {
+func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *http.Request, next traffic.NextMiddlewareFunc) (traffic.ResponseWriter, *http.Request) {
   if r.URL.Path == "/ping" {
     fmt.Fprint(w, "pong\n")
 
@@ -20,22 +20,19 @@ func (c *PingMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
   }
 
   if nextMiddleware := next(); nextMiddleware != nil {
-    arw := w.(*traffic.AppResponseWriter)
-    arw.SetVar("ping", "pong")
+    w.SetVar("ping", "pong")
     w, r = nextMiddleware.ServeHTTP(w, r, next)
   }
 
   return w, r
 }
 
-func root(w http.ResponseWriter, r *http.Request) {
-  arw := w.(*traffic.AppResponseWriter)
-
-  logger := arw.GetVar("logger").(*log.Logger)
+func root(w traffic.ResponseWriter, r *http.Request) {
+  logger := w.GetVar("logger").(*log.Logger)
   logger.Printf("Hello")
 
-  fmt.Fprintf(w, "Router var foo: %v\n", arw.GetVar("foo"))
-  fmt.Fprintf(w, "Middleware var ping: %v\n", arw.GetVar("ping"))
+  fmt.Fprintf(w, "Router var foo: %v\n", w.GetVar("foo"))
+  fmt.Fprintf(w, "Middleware var ping: %v\n", w.GetVar("ping"))
 }
 
 func main() {

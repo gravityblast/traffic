@@ -4,14 +4,13 @@ import (
   "os"
   "fmt"
   "html/template"
-  "net/http"
   "path/filepath"
   "io/ioutil"
 )
 
 const DefaultViewsPath = "views"
 
-type RenderFunc func(w http.ResponseWriter, template string, data interface{})
+type RenderFunc func(w ResponseWriter, template string, data interface{})
 
 var templateManager *TemplateManager
 
@@ -80,14 +79,14 @@ func (t *TemplateManager) templatesPath() string {
   return DefaultViewsPath
 }
 
-func (t *TemplateManager) Render(w http.ResponseWriter, template string, data interface{}) {
+func (t *TemplateManager) Render(w ResponseWriter, template string, data interface{}) {
   err := t.templates.ExecuteTemplate(w, template, data)
   if err != nil {
     panic(err)
   }
 }
 
-func (t *TemplateManager) RenderTemplateErrors(w http.ResponseWriter, template string, data interface{}) {
+func (t *TemplateManager) RenderTemplateErrors(w ResponseWriter, template string, data interface{}) {
   if t.templatesReadError != nil {
     panic(t.templatesReadError)
   }
@@ -115,6 +114,6 @@ func initTemplateManager() {
   templateManager = newTemplateManager()
 }
 
-func Render(w http.ResponseWriter, template string, data interface{}) {
+func Render(w ResponseWriter, template string, data interface{}) {
   templateManager.renderFunc(w, template, data)
 }

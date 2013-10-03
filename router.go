@@ -14,12 +14,12 @@ const DEFAULT_CONFIG_FILE = "traffic.conf"
 
 type HttpMethod string
 
-type BeforeFilterFunc func(http.ResponseWriter, *http.Request) bool
+type BeforeFilterFunc func(ResponseWriter, *http.Request) bool
 
 type NextMiddlewareFunc func() Middleware
 
 type Middleware interface {
-  ServeHTTP(http.ResponseWriter, *http.Request, NextMiddlewareFunc) (http.ResponseWriter, *http.Request)
+  ServeHTTP(ResponseWriter, *http.Request, NextMiddlewareFunc) (ResponseWriter, *http.Request)
 }
 
 type Router struct {
@@ -85,7 +85,7 @@ func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Router {
   return router
 }
 
-func (router *Router) handleNotFound (w http.ResponseWriter, r *http.Request) {
+func (router *Router) handleNotFound (w ResponseWriter, r *http.Request) {
   if router.NotFoundHandler != nil {
     router.NotFoundHandler(w, r)
   } else {

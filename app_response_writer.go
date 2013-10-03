@@ -4,6 +4,14 @@ import (
   "net/http"
 )
 
+type ResponseWriter interface {
+  http.ResponseWriter
+  SetVar(string, interface{})
+  GetVar(string) interface{}
+  AddBeforeWriteHandler(handler func())
+  StatusCode() int
+}
+
 type AppResponseWriter struct {
   http.ResponseWriter
   statusCode int

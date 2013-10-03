@@ -9,7 +9,7 @@ import (
   assert "github.com/pilu/miniassert"
 )
 
-func httpHandlerExample(r http.ResponseWriter, req *http.Request) {}
+func httpHandlerExample(r ResponseWriter, req *http.Request) {}
 
 func TestNewRoute(t *testing.T) {
   path := "/categories/:category_id/posts/:id"
@@ -91,8 +91,8 @@ func TestRoute_Match_WithOptionalSegments(t *testing.T) {
 func TestRoute_AddBeforeFilterToRoute(t *testing.T) {
   route := NewRoute("/", httpHandlerExample)
   assert.Equal(t, 0, len(route.beforeFilters))
-  filterA := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })
-  filterB := BeforeFilterFunc(func(w http.ResponseWriter, r *http.Request) bool { return true })
+  filterA := BeforeFilterFunc(func(w ResponseWriter, r *http.Request) bool { return true })
+  filterB := BeforeFilterFunc(func(w ResponseWriter, r *http.Request) bool { return true })
 
   route.AddBeforeFilter(filterA)
   assert.Equal(t, 1, len(route.beforeFilters))

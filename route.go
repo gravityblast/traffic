@@ -6,7 +6,7 @@ import (
   "regexp"
 )
 
-type HttpHandleFunc func(http.ResponseWriter, *http.Request)
+type HttpHandleFunc func(ResponseWriter, *http.Request)
 
 type Route struct {
   Path string

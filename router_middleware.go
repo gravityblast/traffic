@@ -8,7 +8,7 @@ type RouterMiddleware struct {
   router *Router
 }
 
-func (routerMiddleware *RouterMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request, next NextMiddlewareFunc) (http.ResponseWriter, *http.Request) {
+func (routerMiddleware *RouterMiddleware) ServeHTTP(w ResponseWriter, r *http.Request, next NextMiddlewareFunc) (ResponseWriter, *http.Request) {
   for _, route := range routerMiddleware.router.routes[HttpMethod(r.Method)] {
     values, ok := route.Match(r.URL.Path)
     if ok {
