@@ -27,11 +27,11 @@ import (
   "fmt"
 )
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func rootHandler(w traffic.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, "Hello World\n")
 }
 
-func pageHandler(w http.ResponseWriter, r *http.Request) {
+func pageHandler(w traffic.ResponseWriter, r *http.Request) {
   params := r.URL.Query()
   fmt.Fprintf(w, "Category ID: %s\n", params.Get("category_id"))
   fmt.Fprintf(w, "Page ID: %s\n", params.Get("id"))
@@ -73,21 +73,21 @@ router.Get("/private", privatePageHandler).
 Complete example:
 
 ```go
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func rootHandler(w traffic.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, "Hello World\n")
 }
 
-func privatePageHandler(w http.ResponseWriter, r *http.Request) {
+func privatePageHandler(w traffic.ResponseWriter, r *http.Request) {
   fmt.Fprint(w, "Hello Private Page\n")
 }
 
-func pageHandler(w http.ResponseWriter, r *http.Request) {
+func pageHandler(w traffic.ResponseWriter, r *http.Request) {
   params := r.URL.Query()
   fmt.Fprintf(w, "Category ID: %s\n", params.Get("category_id"))
   fmt.Fprintf(w, "Page ID: %s\n", params.Get("id"))
 }
 
-func checkApiKey(w http.ResponseWriter, r *http.Request) bool {
+func checkApiKey(w traffic.ResponseWriter, r *http.Request) bool {
   params := r.URL.Query()
   if params.Get("api_key") != "foo" {
     w.WriteHeader(http.StatusUnauthorized)
@@ -97,7 +97,7 @@ func checkApiKey(w http.ResponseWriter, r *http.Request) bool {
   return true
 }
 
-func checkPrivatePageApiKey(w http.ResponseWriter, r *http.Request) bool {
+func checkPrivatePageApiKey(w traffic.ResponseWriter, r *http.Request) bool {
   params := r.URL.Query()
   if params.Get("private_api_key") != "bar" {
     w.WriteHeader(http.StatusUnauthorized)
@@ -107,13 +107,13 @@ func checkPrivatePageApiKey(w http.ResponseWriter, r *http.Request) bool {
   return true
 }
 
-func addAppNameHeader(w http.ResponseWriter, r *http.Request) bool {
+func addAppNameHeader(w traffic.ResponseWriter, r *http.Request) bool {
   w.Header().Add("X-APP-NAME", "My App")
 
   return true
 }
 
-func addTimeHeader(w http.ResponseWriter, r *http.Request) bool {
+func addTimeHeader(w traffic.ResponseWriter, r *http.Request) bool {
   t := fmt.Sprintf("%s", time.Now())
   w.Header().Add("X-APP-TIME", t)
 
