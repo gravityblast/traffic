@@ -15,6 +15,13 @@ Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.o
   * [Custom not found handler](https://github.com/pilu/traffic/blob/master/examples/not-found/main.go)
   * [Middlewares](https://github.com/pilu/traffic/blob/master/examples/middleware/main.go)
   * [Templates/Views](https://github.com/pilu/traffic/tree/master/examples/templates)
+  * [Easy Configuration](https://github.com/pilu/traffic/tree/master/examples/configuration)
+
+## Development Features
+
+  * [Shows errors and stacktrace in browser](https://github.com/pilu/traffic/tree/master/examples/show-errors)
+  * [Serves static files](https://github.com/pilu/traffic/tree/master/examples/static-files)
+
 
 ## Usage:
 
