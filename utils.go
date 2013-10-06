@@ -1,11 +1,16 @@
 package traffic
 
 import (
-  "fmt"
-  "regexp"
   "os"
+  "fmt"
+  "path"
+  "regexp"
   "strings"
 )
+
+const DefaultViewsPath  = "views"
+const EnvDevelopment    = "development"
+const DefaultConfigFile = "traffic.conf"
 
 var env map[string]interface{}
 
@@ -30,11 +35,55 @@ func GetVar(key string) interface{} {
   return nil
 }
 
-func pathToRegexpString(path string) string {
+func GetStringVar(key string) string {
+  value := GetVar(key)
+  if s, ok := value.(string); ok {
+    return s
+  }
+
+  return ""
+}
+
+func pathToRegexpString(routePath string) string {
   re := regexp.MustCompile(":[^/#?()]+")
-  regexpString := re.ReplaceAllStringFunc(path, func(m string) string {
+  regexpString := re.ReplaceAllStringFunc(routePath, func(m string) string {
     return fmt.Sprintf("(?P<%s>[^/#?]+)", m[1:len(m)])
   })
 
   return fmt.Sprintf("^%s$", regexpString)
+}
+
+func GetStringVarWithDefault(key, defaultValue string) string {
+  value := GetStringVar(key)
+  if value == "" {
+    return defaultValue
+  }
+
+  return value
+}
+
+func Env() string {
+  return GetStringVarWithDefault("env", EnvDevelopment)
+}
+
+func RootPath() string {
+  return GetStringVarWithDefault("root", ".")
+}
+
+func ViewsPath() string {
+  viewsPath := GetStringVarWithDefault("views", DefaultViewsPath)
+  if path.IsAbs(viewsPath) {
+    return viewsPath
+  }
+
+  return path.Join(RootPath(), viewsPath)
+}
+
+func ConfigFilePath() string {
+  filePath := GetStringVarWithDefault("config_file", DefaultConfigFile)
+  if path.IsAbs(filePath) {
+    return filePath
+  }
+
+  return path.Join(RootPath(), filePath)
 }

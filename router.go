@@ -8,10 +8,6 @@ import (
   "github.com/pilu/config"
 )
 
-const ENV_DEVELOPMENT = "development"
-
-const DEFAULT_CONFIG_FILE = "traffic.conf"
-
 type HttpMethod string
 
 type BeforeFilterFunc func(ResponseWriter, *http.Request) bool
@@ -155,14 +151,10 @@ func New() *Router {
   router.SetVar("logger", logger)
 
   // Environment
-  env, ok := GetVar("env").(string)
-  if !ok {
-    env = ENV_DEVELOPMENT
-    router.SetVar("env", env)
-  }
+  env := Env()
 
   // Add useful middlewares for development
-  if env == ENV_DEVELOPMENT {
+  if env == EnvDevelopment {
     // Static middleware
     publicPath, ok := GetVar("public").(string)
     if !ok {
@@ -184,11 +176,9 @@ func New() *Router {
   }
 
   // configuration
-  configFile, ok := GetVar("config_file").(string)
-  if ok {
+  configFile := ConfigFilePath()
+  if _, err := os.Stat(configFile); err == nil {
     router.loadConfigurationsFromFile(configFile, env)
-  } else if _, err := os.Stat(DEFAULT_CONFIG_FILE); err == nil {
-    router.loadConfigurationsFromFile(DEFAULT_CONFIG_FILE, env)
   }
 
   initTemplateManager()

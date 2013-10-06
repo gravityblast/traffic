@@ -8,8 +8,6 @@ import (
   "io/ioutil"
 )
 
-const DefaultViewsPath = "views"
-
 type RenderFunc func(w ResponseWriter, template string, data interface{})
 
 var templateManager *TemplateManager
@@ -98,12 +96,7 @@ func (t *TemplateManager) RenderTemplateErrors(w ResponseWriter, template string
 
 func newTemplateManager() *TemplateManager {
   t := &TemplateManager{}
-  if path := GetVar("views"); path != nil {
-    t.viewsBasePath = path.(string)
-  } else {
-    t.viewsBasePath = DefaultViewsPath
-  }
-
+  t.viewsBasePath = ViewsPath()
   t.renderFunc = t.Render
   t.loadTemplates()
 
