@@ -121,3 +121,20 @@ func TestConfigFilePath(t *testing.T) {
 
   resetGlobalEnv()
 }
+
+func TestPublicPath(t *testing.T) {
+  resetGlobalEnv()
+
+  assert.Equal(t, DefaultPublicPath, PublicPath())
+
+  SetVar("public", "custom-public")
+  assert.Equal(t, "custom-public", PublicPath())
+
+  SetVar("root", "/root")
+  assert.Equal(t, "/root/custom-public", PublicPath())
+
+  SetVar("public", "/absolute/public")
+  assert.Equal(t, "/absolute/public", PublicPath())
+
+  resetGlobalEnv()
+}

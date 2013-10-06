@@ -8,8 +8,9 @@ import (
   "strings"
 )
 
-const DefaultViewsPath  = "views"
 const EnvDevelopment    = "development"
+const DefaultViewsPath  = "views"
+const DefaultPublicPath = "public"
 const DefaultConfigFile = "traffic.conf"
 
 var env map[string]interface{}
@@ -86,4 +87,13 @@ func ConfigFilePath() string {
   }
 
   return path.Join(RootPath(), filePath)
+}
+
+func PublicPath() string {
+  publicPath := GetStringVarWithDefault("public", DefaultPublicPath)
+  if path.IsAbs(publicPath) {
+    return publicPath
+  }
+
+  return path.Join(RootPath(), publicPath)
 }

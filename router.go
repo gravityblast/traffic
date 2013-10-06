@@ -156,13 +156,7 @@ func New() *Router {
   // Add useful middlewares for development
   if env == EnvDevelopment {
     // Static middleware
-    publicPath, ok := GetVar("public").(string)
-    if !ok {
-      publicPath = "public"
-      SetVar("public", publicPath)
-    }
-
-    router.AddMiddleware(NewStaticMiddleware(publicPath))
+    router.AddMiddleware(NewStaticMiddleware(PublicPath()))
 
     // Logger middleware
     loggerMiddleware := &LoggerMiddleware{

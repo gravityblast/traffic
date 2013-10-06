@@ -1,6 +1,7 @@
 package main
 
 import (
+  "log"
   "net/http"
   "github.com/pilu/traffic"
 )
@@ -21,5 +22,8 @@ func main() {
   router.Get("/", rootHandler)
 
   http.Handle("/", router)
-  http.ListenAndServe(":7000", nil)
+  err := http.ListenAndServe(":7000", nil)
+  if err != nil {
+    log.Fatal(err)
+  }
 }
