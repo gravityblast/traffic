@@ -14,13 +14,17 @@ type ILogger interface {
   Printf(string, ...interface{})
 }
 
-const EnvDevelopment    = "development"
-const DefaultViewsPath  = "views"
-const DefaultPublicPath = "public"
-const DefaultConfigFile = "traffic.conf"
+const (
+  EnvDevelopment    = "development"
+  DefaultViewsPath  = "views"
+  DefaultPublicPath = "public"
+  DefaultConfigFile = "traffic.conf"
+)
 
-var env map[string]interface{}
-var logger ILogger
+var (
+  env     map[string]interface{}
+  logger  ILogger
+)
 
 func init() {
   env = make(map[string]interface{})
