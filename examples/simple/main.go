@@ -7,6 +7,7 @@ import (
 )
 
 func rootHandler(w traffic.ResponseWriter, r *http.Request) {
+  traffic.Logger().Print("Hello")
   fmt.Fprint(w, "Hello World\n")
 }
 

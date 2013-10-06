@@ -3,10 +3,16 @@ package traffic
 import (
   "os"
   "fmt"
+  "log"
   "path"
   "regexp"
   "strings"
 )
+
+type ILogger interface {
+  Print(...interface{})
+  Printf(string, ...interface{})
+}
 
 const EnvDevelopment    = "development"
 const DefaultViewsPath  = "views"
@@ -14,9 +20,19 @@ const DefaultPublicPath = "public"
 const DefaultConfigFile = "traffic.conf"
 
 var env map[string]interface{}
+var logger ILogger
 
 func init() {
   env = make(map[string]interface{})
+  SetLogger(log.New(os.Stderr, "", log.LstdFlags))
+}
+
+func Logger() ILogger {
+  return logger
+}
+
+func SetLogger(customLogger ILogger) {
+  logger = customLogger
 }
 
 func SetVar(key string, value interface{}) {

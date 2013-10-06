@@ -1,10 +1,9 @@
 package traffic
 
 import (
-  "net/http"
   "os"
-  "log"
   "fmt"
+  "net/http"
   "github.com/pilu/config"
 )
 
@@ -136,6 +135,20 @@ func (router *Router) loadConfigurationsFromFile(path, env string) {
   }
 }
 
+func addDevelopmentMiddlewares(router *Router) {
+  // Static middleware
+  router.AddMiddleware(NewStaticMiddleware(PublicPath()))
+
+  // Logger middleware
+  loggerMiddleware := &LoggerMiddleware{
+    router: router,
+  }
+  router.AddMiddleware(loggerMiddleware)
+
+  // ShowErrors middleware
+  router.AddMiddleware(&ShowErrorsMiddleware{})
+}
+
 func New() *Router {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
@@ -146,27 +159,12 @@ func New() *Router {
   routerMiddleware := &RouterMiddleware{ router }
   router.AddMiddleware(routerMiddleware)
 
-  // Logger
-  logger := log.New(os.Stderr, "", log.LstdFlags)
-  router.SetVar("logger", logger)
-
   // Environment
   env := Env()
 
   // Add useful middlewares for development
   if env == EnvDevelopment {
-    // Static middleware
-    router.AddMiddleware(NewStaticMiddleware(PublicPath()))
-
-    // Logger middleware
-    loggerMiddleware := &LoggerMiddleware{
-      router: router,
-      logger: logger,
-    }
-    router.AddMiddleware(loggerMiddleware)
-
-    // ShowErrors middleware
-    router.AddMiddleware(&ShowErrorsMiddleware{})
+    addDevelopmentMiddlewares(router)
   }
 
   // configuration

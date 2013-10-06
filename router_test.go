@@ -21,8 +21,7 @@ func TestNew(t *testing.T) {
   assert.Type(t, "*traffic.StaticMiddleware", router.middlewares[2])
   assert.Type(t, "*traffic.RouterMiddleware", router.middlewares[3])
 
-  assert.Equal(t, 1, len(router.env))
-  assert.Type(t, "*log.Logger", router.env["logger"])
+  assert.Equal(t, 0, len(router.env))
 }
 
 func TestRouter_Add(t *testing.T) {
