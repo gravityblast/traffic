@@ -166,3 +166,25 @@ func TestSetPort(t *testing.T) {
 
   resetGlobalEnv()
 }
+
+func TestHost(t *testing.T) {
+  resetGlobalEnv()
+
+  assert.Equal(t, DefaultHost, Host())
+
+  SetVar("host", "1.2.3.4")
+  assert.Equal(t, "1.2.3.4", Host())
+
+  resetGlobalEnv()
+}
+
+func TestSetHost(t *testing.T) {
+  resetGlobalEnv()
+
+  assert.Nil(t, GetVar("host"))
+
+  SetHost("1.2.3.4")
+  assert.Equal(t, "1.2.3.4", GetVar("host"))
+
+  resetGlobalEnv()
+}

@@ -21,6 +21,7 @@ const (
   DefaultPublicPath = "public"
   DefaultConfigFile = "traffic.conf"
   DefaultPort       = 7000
+  DefaultHost       = "127.0.0.1"
 )
 
 var (
@@ -145,4 +146,14 @@ func Port() int {
   }
 
   return DefaultPort
+}
+
+func Host() string {
+  host := getStringVarWithDefault("host", DefaultHost)
+
+  return host
+}
+
+func SetHost(host string) {
+  SetVar("host", host)
 }
