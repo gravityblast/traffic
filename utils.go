@@ -58,7 +58,7 @@ func GetVar(key string) interface{} {
   return nil
 }
 
-func GetStringVar(key string) string {
+func getStringVar(key string) string {
   value := GetVar(key)
   if s, ok := value.(string); ok {
     return s
@@ -77,7 +77,7 @@ func pathToRegexpString(routePath string) string {
 }
 
 func getStringVarWithDefault(key, defaultValue string) string {
-  value := GetStringVar(key)
+  value := getStringVar(key)
   if value == "" {
     return defaultValue
   }
@@ -126,6 +126,11 @@ func SetPort(port int) {
 
 func Port() int {
   port := GetVar("port")
+
+  if port == nil {
+    return DefaultPort
+  }
+
   if i, ok := port.(int); ok {
     return i
   }
