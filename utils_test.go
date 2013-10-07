@@ -138,3 +138,31 @@ func TestPublicPath(t *testing.T) {
 
   resetGlobalEnv()
 }
+
+func TestPort(t *testing.T) {
+  resetGlobalEnv()
+
+  assert.Equal(t, DefaultPort, Port())
+
+  SetVar("port", 80)
+  assert.Equal(t, 80, Port())
+
+  SetVar("port", "80")
+  assert.Equal(t, 80, Port())
+
+  SetVar("port", "")
+  assert.Equal(t, DefaultPort, Port())
+
+  resetGlobalEnv()
+}
+
+func TestSetPort(t *testing.T) {
+  resetGlobalEnv()
+
+  assert.Nil(t, GetVar("port"))
+
+  SetPort(80)
+  assert.Equal(t, 80, GetVar("port"))
+
+  resetGlobalEnv()
+}

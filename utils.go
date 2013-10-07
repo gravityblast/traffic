@@ -7,6 +7,7 @@ import (
   "path"
   "regexp"
   "strings"
+  "strconv"
 )
 
 type ILogger interface {
@@ -19,6 +20,7 @@ const (
   DefaultViewsPath  = "views"
   DefaultPublicPath = "public"
   DefaultConfigFile = "traffic.conf"
+  DefaultPort       = 7000
 )
 
 var (
@@ -74,7 +76,7 @@ func pathToRegexpString(routePath string) string {
   return fmt.Sprintf("^%s$", regexpString)
 }
 
-func GetStringVarWithDefault(key, defaultValue string) string {
+func getStringVarWithDefault(key, defaultValue string) string {
   value := GetStringVar(key)
   if value == "" {
     return defaultValue
@@ -84,15 +86,15 @@ func GetStringVarWithDefault(key, defaultValue string) string {
 }
 
 func Env() string {
-  return GetStringVarWithDefault("env", EnvDevelopment)
+  return getStringVarWithDefault("env", EnvDevelopment)
 }
 
 func RootPath() string {
-  return GetStringVarWithDefault("root", ".")
+  return getStringVarWithDefault("root", ".")
 }
 
 func ViewsPath() string {
-  viewsPath := GetStringVarWithDefault("views", DefaultViewsPath)
+  viewsPath := getStringVarWithDefault("views", DefaultViewsPath)
   if path.IsAbs(viewsPath) {
     return viewsPath
   }
@@ -101,7 +103,7 @@ func ViewsPath() string {
 }
 
 func ConfigFilePath() string {
-  filePath := GetStringVarWithDefault("config_file", DefaultConfigFile)
+  filePath := getStringVarWithDefault("config_file", DefaultConfigFile)
   if path.IsAbs(filePath) {
     return filePath
   }
@@ -110,10 +112,32 @@ func ConfigFilePath() string {
 }
 
 func PublicPath() string {
-  publicPath := GetStringVarWithDefault("public", DefaultPublicPath)
+  publicPath := getStringVarWithDefault("public", DefaultPublicPath)
   if path.IsAbs(publicPath) {
     return publicPath
   }
 
   return path.Join(RootPath(), publicPath)
+}
+
+func SetPort(port int) {
+  SetVar("port", port)
+}
+
+func Port() int {
+  port := GetVar("port")
+  if i, ok := port.(int); ok {
+    return i
+  }
+
+  if s, ok := port.(string); ok {
+    i, err := strconv.Atoi(s)
+    if err != nil {
+      return DefaultPort
+    }
+
+    return i
+  }
+
+  return DefaultPort
 }
