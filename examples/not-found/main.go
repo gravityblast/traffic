@@ -1,9 +1,9 @@
 package main
 
 import (
+  "fmt"
   "net/http"
   "github.com/pilu/traffic"
-  "fmt"
 )
 
 func rootHandler(w traffic.ResponseWriter, r *http.Request) {
@@ -30,6 +30,5 @@ func main() {
   // Custom not found handler
   router.NotFoundHandler = customNotFoundHandler
 
-  http.Handle("/", router)
-  http.ListenAndServe(":7000", nil)
+  router.Run()
 }

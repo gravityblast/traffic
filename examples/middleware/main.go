@@ -2,9 +2,8 @@ package main
 
 import (
   "fmt"
-  "github.com/pilu/traffic"
   "net/http"
-  "log"
+  "github.com/pilu/traffic"
 )
 
 type PingMiddleware struct {}
@@ -28,10 +27,7 @@ func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *http.Request, ne
 }
 
 func root(w traffic.ResponseWriter, r *http.Request) {
-  logger := w.GetVar("logger").(*log.Logger)
-  logger.Printf("Hello")
-
-  fmt.Fprintf(w, "Router var foo: %v\n", w.GetVar("foo"))
+  fmt.Fprintf(w, "Router var foo: %v.\n", w.GetVar("foo"))
   fmt.Fprintf(w, "Middleware var ping: %v\n", w.GetVar("ping"))
 }
 
@@ -44,6 +40,5 @@ func main() {
   // Add root handler
   t.Get("/", root)
 
-  http.Handle("/", t)
-  http.ListenAndServe(":7000", nil)
+  t.Run()
 }

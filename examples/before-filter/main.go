@@ -1,10 +1,10 @@
 package main
 
 import (
-  "net/http"
-  "github.com/pilu/traffic"
   "fmt"
   "time"
+  "net/http"
+  "github.com/pilu/traffic"
 )
 
 func rootHandler(w traffic.ResponseWriter, r *http.Request) {
@@ -69,6 +69,5 @@ func main() {
          AddBeforeFilter(addAppNameHeader).
          AddBeforeFilter(addTimeHeader)
 
-  http.Handle("/", router)
-  http.ListenAndServe(":7000", nil)
+  router.Run()
 }
