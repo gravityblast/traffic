@@ -3,6 +3,7 @@ package traffic
 import (
   "os"
   "fmt"
+  "log"
   "net/http"
   "github.com/pilu/config"
 )
@@ -147,6 +148,15 @@ func addDevelopmentMiddlewares(router *Router) {
 
   // ShowErrors middleware
   router.AddMiddleware(&ShowErrorsMiddleware{})
+}
+
+func (router *Router) Run() {
+  address := fmt.Sprintf("%s:%d", Host(), Port())
+  Logger().Printf("Starting in %s on %s", Env(), address)
+  err := http.ListenAndServe(address, router)
+  if err != nil {
+    log.Fatal(err)
+  }
 }
 
 func New() *Router {
