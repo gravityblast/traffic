@@ -14,17 +14,24 @@ var commands map[string]Command
 var logger *log.Logger
 
 func init() {
+  logger = log.New(os.Stderr, "", 0)
   commands = map[string]Command{
     "new": &CommandNew{},
   }
+}
 
-  logger = log.New(os.Stderr, "", 0)
+func usage() {
+  fmt.Println("Available commands:")
+  for name, _ := range commands {
+    fmt.Printf("  - %s\n", name)
+  }
 }
 
 func main() {
   var command string
   args := os.Args
-  if len(args) > 0 {
+
+  if len(args) > 1 {
     command = args[1]
   }
 
@@ -33,5 +40,6 @@ func main() {
     c.Execute(args[2:len(args)])
   } else {
     fmt.Printf("Unknown command `%s`\n", command)
+    usage()
   }
 }
