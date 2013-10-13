@@ -8,6 +8,8 @@ import (
   "io/ioutil"
 )
 
+const TemplateExtension = ".tpl"
+
 type RenderFunc func(w ResponseWriter, template string, data interface{})
 
 var templateManager *TemplateManager
@@ -36,7 +38,7 @@ func (t *TemplateManager) WalkFunc(path string, info os.FileInfo, err error) err
     return err
   }
 
-  if extension := filepath.Ext(path); !info.IsDir() && extension == ".tmpl" {
+  if extension := filepath.Ext(path); !info.IsDir() && extension == TemplateExtension {
     relativePath, err  := filepath.Rel(t.viewsBasePath, path)
     if err != nil {
       t.templatesReadError = err
