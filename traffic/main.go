@@ -17,13 +17,14 @@ func init() {
   logger = log.New(os.Stderr, "", 0)
   commands = map[string]Command{
     "new": &CommandNew{},
+    "run": &CommandRun{},
   }
 }
 
 func usage() {
-  fmt.Println("Available commands:")
+  fmt.Println("\nAvailable commands:")
   for name, _ := range commands {
-    fmt.Printf("  - %s\n", name)
+    fmt.Printf("  * %s\n", name)
   }
 }
 
@@ -41,5 +42,6 @@ func main() {
   } else {
     fmt.Printf("Unknown command `%s`\n", command)
     usage()
+    os.Exit(1)
   }
 }
