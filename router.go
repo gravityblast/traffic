@@ -19,11 +19,11 @@ type Middleware interface {
 }
 
 type Router struct {
-  routes map[HttpMethod][]*Route
   NotFoundHandler HttpHandleFunc
-  beforeFilters []BeforeFilterFunc
-  middlewares []Middleware
-  env map[string]interface{}
+  routes          map[HttpMethod][]*Route
+  beforeFilters   []BeforeFilterFunc
+  middlewares     []Middleware
+  env             map[string]interface{}
 }
 
 func (router Router) MiddlewareEnumerator() func() Middleware {
@@ -160,11 +160,12 @@ func (router *Router) Run() {
 }
 
 func New() *Router {
-  router := &Router{}
-  router.routes = make(map[HttpMethod][]*Route)
-  router.beforeFilters = make([]BeforeFilterFunc, 0)
-  router.middlewares = make([]Middleware, 0)
-  router.env = make(map[string]interface{})
+  router := &Router{
+    routes:         make(map[HttpMethod][]*Route),
+    beforeFilters:  make([]BeforeFilterFunc, 0),
+    middlewares:    make([]Middleware, 0),
+    env:            make(map[string]interface{}),
+  }
 
   routerMiddleware := &RouterMiddleware{ router }
   router.AddMiddleware(routerMiddleware)
