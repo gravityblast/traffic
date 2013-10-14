@@ -21,9 +21,38 @@ Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.o
 
   * [Shows errors and stacktrace in browser](https://github.com/pilu/traffic/tree/master/examples/show-errors)
   * [Serves static files](https://github.com/pilu/traffic/tree/master/examples/static-files)
+  * [Project Generator]
 
+## Installation
 
-## Usage:
+Dowload the `Traffic` code:
+
+```bash
+go get github.com/pilu/traffic
+```
+
+Build the command line tool:
+
+```bash
+go get github.com/pilu/traffic/traffic
+```
+
+Create a new project:
+```bash
+traffic new hello
+```
+
+Run your project:
+```bash
+cd hello
+go build && ./hello
+```
+
+A command line `runner` is in development. It will build and run the project every time a file is created/modified.
+
+## Example:
+The following code is a simple example, the documentation in still in development.
+For more examples check the `examples` folder.
 
 ```go
 package main
