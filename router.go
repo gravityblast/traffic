@@ -4,6 +4,7 @@ import (
   "os"
   "fmt"
   "log"
+  "runtime"
   "net/http"
   "github.com/pilu/config"
 )
@@ -11,6 +12,7 @@ import (
 type HttpMethod string
 
 type BeforeFilterFunc func(ResponseWriter, *http.Request) bool
+type ErrorHandlerFunc func(ResponseWriter, *http.Request, interface{})
 
 type NextMiddlewareFunc func() Middleware
 
@@ -20,6 +22,7 @@ type Middleware interface {
 
 type Router struct {
   NotFoundHandler HttpHandleFunc
+  ErrorHandler    ErrorHandlerFunc
   routes          map[HttpMethod][]*Route
   beforeFilters   []BeforeFilterFunc
   middlewares     []Middleware
@@ -81,7 +84,7 @@ func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Router {
   return router
 }
 
-func (router *Router) handleNotFound (w ResponseWriter, r *http.Request) {
+func (router *Router) handleNotFound(w ResponseWriter, r *http.Request) {
   if router.NotFoundHandler != nil {
     router.NotFoundHandler(w, r)
   } else {
@@ -89,9 +92,31 @@ func (router *Router) handleNotFound (w ResponseWriter, r *http.Request) {
   }
 }
 
+func (router *Router) handlePanic(w ResponseWriter, r *http.Request, err interface{}) {
+  if router.ErrorHandler != nil {
+    w.WriteHeader(http.StatusInternalServerError)
+    router.ErrorHandler(w, r, err)
+  } else {
+    http.Error(w, "Something went wrong", http.StatusInternalServerError)
+  }
+
+  const size = 4096
+  stack := make([]byte, size)
+  stack = stack[:runtime.Stack(stack, false)]
+
+  logger.Printf("%v\n", err)
+  logger.Printf("%s\n", string(stack))
+}
+
 func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
   w := newAppResponseWriter(rw, &router.env)
   w.Header().Set("Content-Type", "text/html")
+
+  defer func() {
+    if recovered := recover(); recovered != nil {
+      router.handlePanic(w, r, recovered)
+    }
+  }()
 
   nextMiddlewareFunc := router.MiddlewareEnumerator()
   if nextMiddleware := nextMiddlewareFunc(); nextMiddleware != nil {
