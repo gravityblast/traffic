@@ -21,7 +21,7 @@ Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.o
 
   * [Shows errors and stacktrace in browser](https://github.com/pilu/traffic/tree/master/examples/show-errors)
   * [Serves static files](https://github.com/pilu/traffic/tree/master/examples/static-files)
-  * [Project Generator]
+  * Project Generator
 
 ## Installation
 
