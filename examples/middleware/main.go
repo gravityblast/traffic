@@ -10,7 +10,8 @@ type PingMiddleware struct {}
 
 // If the request path is "/ping", it writes PONG in the response and returns without calling the next middleware
 // Otherwise it sets the variable "PING" with PONG as value and calls the next  middleware.
-// The next middleware can
+// The next middleware and the final handler can get that variable with:
+//   w.GetVar("ping")
 func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *http.Request, next traffic.NextMiddlewareFunc) (traffic.ResponseWriter, *http.Request) {
   if r.URL.Path == "/ping" {
     fmt.Fprint(w, "pong\n")
