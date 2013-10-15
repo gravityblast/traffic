@@ -2,9 +2,8 @@
 
 [![Build Status](https://travis-ci.org/pilu/traffic.png?branch=master)](https://travis-ci.org/pilu/traffic)
 
-[Mailing List](https://groups.google.com/forum/#!forum/traffic-go)
-
 Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.org/ "The Go programming language").
+[Mailing List](https://groups.google.com/forum/#!forum/traffic-go)
 
 ## Installation
 
