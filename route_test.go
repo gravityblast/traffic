@@ -43,6 +43,11 @@ func TestRoute_Match(t *testing.T) {
       "/categories/foo/posts/bar",
       "category_id=foo&id=bar",
     },
+    {
+      "/pages/:page_path*",
+      "/pages/foo/bar/baz",
+      "page_path=foo%2Fbar%2Fbaz",
+    },
   }
 
   for _, opts := range tests {

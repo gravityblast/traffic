@@ -69,9 +69,17 @@ func getStringVar(key string) string {
 }
 
 func pathToRegexpString(routePath string) string {
-  re := regexp.MustCompile(":[^/#?()]+")
-  regexpString := re.ReplaceAllStringFunc(routePath, func(m string) string {
-    return fmt.Sprintf("(?P<%s>[^/#?]+)", m[1:len(m)])
+  var re *regexp.Regexp
+  regexpString := routePath
+
+  re = regexp.MustCompile(`:[^/#?()]+\*`)
+  regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
+    return fmt.Sprintf("(?P<%s>.+)", m[1:len(m) - 1])
+  })
+
+  re = regexp.MustCompile(`:[^/#?()]+`)
+  regexpString = re.ReplaceAllStringFunc(regexpString, func(m string) string {
+    return fmt.Sprintf(`(?P<%s>[^/#?]+)`, m[1:len(m)])
   })
 
   return fmt.Sprintf("^%s$", regexpString)
