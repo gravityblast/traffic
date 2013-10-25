@@ -48,6 +48,11 @@ func TestRoute_Match(t *testing.T) {
       "/pages/foo/bar/baz",
       "page_path=foo%2Fbar%2Fbaz",
     },
+    {
+      "/pages/:page.html",
+      "/pages/foo.html",
+      "page=foo",
+    },
   }
 
   for _, opts := range tests {
