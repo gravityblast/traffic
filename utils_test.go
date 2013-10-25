@@ -43,24 +43,24 @@ func TestGetStringVar(t *testing.T) {
 func TestPathToRegexpString(t *testing.T) {
   tests := [][]string{
     {
-      "/",
-      "^/$",
+      `/`,
+      `\A/\z`,
     },
     {
-      "/foo/bar",
-      "^/foo/bar$",
+      `/foo/bar`,
+      `\A/foo/bar\z`,
     },
     {
-      "/foo/bar",
-      "^/foo/bar$",
+      `/foo/bar`,
+      `\A/foo/bar\z`,
     },
     {
-      "/:foo/bar/:baz",
-      "^/(?P<foo>[^/#?]+)/bar/(?P<baz>[^/#?]+)$",
+      `/:foo/bar/:baz`,
+      `\A/(?P<foo>[^/#?]+)/bar/(?P<baz>[^/#?]+)\z`,
     },
     {
-      "(/categories/:category_id)?/posts/:id",
-      "^(/categories/(?P<category_id>[^/#?]+))?/posts/(?P<id>[^/#?]+)$",
+      `(/categories/:category_id)?/posts/:id`,
+      `\A(/categories/(?P<category_id>[^/#?]+))?/posts/(?P<id>[^/#?]+)\z`,
     },
   }
 

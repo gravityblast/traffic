@@ -89,7 +89,7 @@ func pathToRegexpString(routePath string) string {
     return fmt.Sprintf(`(?P<%s>[^/#?]+)`, m[1:len(m)])
   })
 
-  return fmt.Sprintf("^%s$", regexpString)
+  return fmt.Sprintf(`\A%s\z`, regexpString)
 }
 
 func getStringVarWithDefault(key, defaultValue string) string {

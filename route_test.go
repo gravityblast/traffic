@@ -17,7 +17,7 @@ func TestNewRoute(t *testing.T) {
   assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, path, route.Path)
 
-  expectedPathRegexp := regexp.MustCompile("^/categories/(?P<category_id>[^/#?]+)/posts/(?P<id>[^/#?]+)$")
+  expectedPathRegexp := regexp.MustCompile(`\A/categories/(?P<category_id>[^/#?]+)/posts/(?P<id>[^/#?]+)\z`)
   assert.Equal(t, expectedPathRegexp, route.PathRegexp)
 }
 
