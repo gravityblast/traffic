@@ -14,19 +14,19 @@ type ResponseWriter interface {
 
 type AppResponseWriter struct {
   http.ResponseWriter
-  statusCode int
-  env map[string]interface{}
-  routerEnv *map[string]interface{}
+  WroteBody           bool
+  statusCode          int
+  env                 map[string]interface{}
+  routerEnv           *map[string]interface{}
   beforeWriteHandlers []func()
-  wroteBody bool
 }
 
 func (w *AppResponseWriter) Write(data []byte) (n int, err error) {
-  if !w.wroteBody {
+  if !w.WroteBody {
     for _, handler := range w.beforeWriteHandlers {
       handler()
     }
-    w.wroteBody = true
+    w.WroteBody = true
   }
 
   return w.ResponseWriter.Write(data)
