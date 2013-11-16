@@ -145,22 +145,6 @@ func (router *Router) GetVar(key string) interface{} {
   return GetVar(key)
 }
 
-func (router *Router) loadConfigurationsFromFile(path, env string) {
-  mainSectionName := "main"
-  sections, err := config.ParseFile(path, mainSectionName)
-  if err != nil {
-    panic(err)
-  }
-
-  for section, options := range sections {
-    if section == mainSectionName || section == env {
-      for key, value := range options {
-        router.SetVar(key, value)
-      }
-    }
-  }
-}
-
 func addDevelopmentMiddlewares(router *Router) {
   // Static middleware
   router.AddMiddleware(NewStaticMiddleware(PublicPath()))
@@ -184,6 +168,33 @@ func (router *Router) Run() {
   }
 }
 
+func loadConfigurationsFromFile(path, env string) {
+  mainSectionName := "main"
+  sections, err := config.ParseFile(path, mainSectionName)
+  if err != nil {
+    panic(err)
+  }
+
+  for section, options := range sections {
+    if section == mainSectionName || section == env {
+      for key, value := range options {
+        SetVar(key, value)
+      }
+    }
+  }
+}
+
+func init() {
+  env = make(map[string]interface{})
+  SetLogger(log.New(os.Stderr, "", log.LstdFlags))
+
+  // configuration
+  configFile := ConfigFilePath()
+  if _, err := os.Stat(configFile); err == nil {
+    loadConfigurationsFromFile(configFile, Env())
+  }
+}
+
 func New() *Router {
   router := &Router{
     routes:         make(map[HttpMethod][]*Route),
@@ -201,12 +212,6 @@ func New() *Router {
   // Add useful middlewares for development
   if env == EnvDevelopment {
     addDevelopmentMiddlewares(router)
-  }
-
-  // configuration
-  configFile := ConfigFilePath()
-  if _, err := os.Stat(configFile); err == nil {
-    router.loadConfigurationsFromFile(configFile, env)
   }
 
   initTemplateManager()

@@ -3,7 +3,6 @@ package traffic
 import (
   "os"
   "fmt"
-  "log"
   "path"
   "regexp"
   "strings"
@@ -28,11 +27,6 @@ var (
   env     map[string]interface{}
   logger  ILogger
 )
-
-func init() {
-  env = make(map[string]interface{})
-  SetLogger(log.New(os.Stderr, "", log.LstdFlags))
-}
 
 func Logger() ILogger {
   return logger
