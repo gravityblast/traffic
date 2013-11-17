@@ -19,19 +19,14 @@ func (routerMiddleware *RouterMiddleware) ServeHTTP(w ResponseWriter, r *http.Re
 
       r.URL.RawQuery = newValues.Encode()
 
-      continueAfterBeforeFilter := true
+      handlers := append(routerMiddleware.router.beforeFilters, route.beforeFilters...)
+      handlers = append(handlers, route.Handler)
 
-      filters := append(routerMiddleware.router.beforeFilters, route.beforeFilters...)
-
-      for _, beforeFilter := range filters {
-        continueAfterBeforeFilter = beforeFilter(w, r)
-        if !continueAfterBeforeFilter {
+      for _, handler := range handlers {
+        handler(w, r)
+        if w.Written() {
           break
         }
-      }
-
-      if continueAfterBeforeFilter {
-        route.Handler(w, r)
       }
 
       return w, r

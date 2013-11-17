@@ -86,13 +86,13 @@ func TestAppResponseWriter_Write(t *testing.T) {
   arw.AddBeforeWriteHandler(handler_1.handler)
   arw.AddBeforeWriteHandler(handler_2.handler)
 
-  assert.False(t, arw.WroteBody)
+  assert.False(t, arw.Written())
   assert.Equal(t, 0, handler_1.calls)
   assert.Equal(t, 0, handler_2.calls)
 
   arw.Write([]byte("foo"))
 
-  assert.True(t, arw.WroteBody)
+  assert.True(t, arw.Written())
   assert.Equal(t, 1, handler_1.calls)
   assert.Equal(t, 1, handler_2.calls)
   assert.Equal(t, []byte("foo"), recorder.Body.Bytes())

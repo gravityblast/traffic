@@ -10,31 +10,42 @@ type ResponseWriter interface {
   GetVar(string) interface{}
   AddBeforeWriteHandler(handler func())
   StatusCode() int
+  Written() bool
 }
 
 type AppResponseWriter struct {
   http.ResponseWriter
-  WroteBody           bool
+  written             bool
   statusCode          int
   env                 map[string]interface{}
   routerEnv           *map[string]interface{}
   beforeWriteHandlers []func()
 }
 
+
+func (w *AppResponseWriter) beforeWrite() {
+  for _, handler := range w.beforeWriteHandlers {
+    handler()
+  }
+}
+
 func (w *AppResponseWriter) Write(data []byte) (n int, err error) {
-  if !w.WroteBody {
-    for _, handler := range w.beforeWriteHandlers {
-      handler()
-    }
-    w.WroteBody = true
+  if !w.written {
+    w.beforeWrite()
+    w.written = true
   }
 
   return w.ResponseWriter.Write(data)
 }
 
 func (w *AppResponseWriter) WriteHeader(statusCode int) {
+  if !w.written {
+    w.beforeWrite()
+  }
+
   w.statusCode = statusCode
   w.ResponseWriter.WriteHeader(statusCode)
+  w.written = true
 }
 
 func (w *AppResponseWriter) StatusCode() int {
@@ -43,6 +54,10 @@ func (w *AppResponseWriter) StatusCode() int {
 
 func (w *AppResponseWriter) SetVar(key string, value interface{}) {
   w.env[key] = value
+}
+
+func (w *AppResponseWriter) Written() bool {
+  return w.written
 }
 
 func (w *AppResponseWriter) GetVar(key string) interface{} {

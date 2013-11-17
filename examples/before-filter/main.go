@@ -21,37 +21,27 @@ func pageHandler(w traffic.ResponseWriter, r *http.Request) {
   fmt.Fprintf(w, "Page ID: %s\n", params.Get("id"))
 }
 
-func checkApiKey(w traffic.ResponseWriter, r *http.Request) bool {
+func checkApiKey(w traffic.ResponseWriter, r *http.Request) {
   params := r.URL.Query()
   if params.Get("api_key") != "foo" {
     w.WriteHeader(http.StatusUnauthorized)
-    return false
   }
-
-  return true
 }
 
-func checkPrivatePageApiKey(w traffic.ResponseWriter, r *http.Request) bool {
+func checkPrivatePageApiKey(w traffic.ResponseWriter, r *http.Request) {
   params := r.URL.Query()
   if params.Get("private_api_key") != "bar" {
     w.WriteHeader(http.StatusUnauthorized)
-    return false
   }
-
-  return true
 }
 
-func addAppNameHeader(w traffic.ResponseWriter, r *http.Request) bool {
+func addAppNameHeader(w traffic.ResponseWriter, r *http.Request) {
   w.Header().Add("X-APP-NAME", "My App")
-
-  return true
 }
 
-func addTimeHeader(w traffic.ResponseWriter, r *http.Request) bool {
+func addTimeHeader(w traffic.ResponseWriter, r *http.Request) {
   t := fmt.Sprintf("%s", time.Now())
   w.Header().Add("X-APP-TIME", t)
-
-  return true
 }
 
 func main() {

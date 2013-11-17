@@ -11,7 +11,6 @@ import (
 
 type HttpMethod string
 
-type BeforeFilterFunc func(ResponseWriter, *http.Request) bool
 type ErrorHandlerFunc func(ResponseWriter, *http.Request, interface{})
 
 type NextMiddlewareFunc func() Middleware
@@ -24,7 +23,7 @@ type Router struct {
   NotFoundHandler HttpHandleFunc
   ErrorHandler    ErrorHandlerFunc
   routes          map[HttpMethod][]*Route
-  beforeFilters   []BeforeFilterFunc
+  beforeFilters   []HttpHandleFunc
   middlewares     []Middleware
   env             map[string]interface{}
 }
@@ -78,7 +77,7 @@ func (router *Router) Patch(path string, handler HttpHandleFunc) *Route {
   return router.Add(HttpMethod("PATCH"), path, handler)
 }
 
-func (router *Router) AddBeforeFilter(beforeFilter BeforeFilterFunc) *Router {
+func (router *Router) AddBeforeFilter(beforeFilter HttpHandleFunc) *Router {
   router.beforeFilters = append(router.beforeFilters, beforeFilter)
 
   return router
@@ -123,7 +122,7 @@ func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
     nextMiddleware.ServeHTTP(w, r, nextMiddlewareFunc)
   }
 
-  if w.StatusCode() == http.StatusNotFound && !w.WroteBody {
+  if w.StatusCode() == http.StatusNotFound && !w.Written() {
     router.handleNotFound(w, r)
   }
 }
@@ -198,7 +197,7 @@ func init() {
 func New() *Router {
   router := &Router{
     routes:         make(map[HttpMethod][]*Route),
-    beforeFilters:  make([]BeforeFilterFunc, 0),
+    beforeFilters:  make([]HttpHandleFunc, 0),
     middlewares:    make([]Middleware, 0),
     env:            make(map[string]interface{}),
   }

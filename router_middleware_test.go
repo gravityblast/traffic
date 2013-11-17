@@ -21,7 +21,7 @@ func newTestRequest(method, path string) (ResponseWriter, *httptest.ResponseReco
 func newTestRouterMiddleware() *RouterMiddleware {
   router := &Router{}
   router.routes = make(map[HttpMethod][]*Route)
-  router.beforeFilters = make([]BeforeFilterFunc, 0)
+  router.beforeFilters = make([]HttpHandleFunc, 0)
   router.middlewares = make([]Middleware, 0)
   routerMiddleware := &RouterMiddleware{ router }
 
