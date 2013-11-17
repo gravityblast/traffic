@@ -15,8 +15,8 @@ type Route struct {
   beforeFilters []HttpHandleFunc
 }
 
-func (route *Route) AddBeforeFilter(beforeFilter HttpHandleFunc) *Route {
-  route.beforeFilters = append(route.beforeFilters, beforeFilter)
+func (route *Route) AddBeforeFilter(beforeFilters ...HttpHandleFunc) *Route {
+  route.beforeFilters = append(route.beforeFilters, beforeFilters...)
 
   return route
 }
