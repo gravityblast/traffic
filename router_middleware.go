@@ -20,7 +20,7 @@ func (routerMiddleware *RouterMiddleware) ServeHTTP(w ResponseWriter, r *http.Re
       r.URL.RawQuery = newValues.Encode()
 
       handlers := append(routerMiddleware.router.beforeFilters, route.beforeFilters...)
-      handlers = append(handlers, route.Handler)
+      handlers = append(handlers, route.Handlers...)
 
       for _, handler := range handlers {
         handler(w, r)

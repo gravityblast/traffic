@@ -43,8 +43,8 @@ func (router Router) MiddlewareEnumerator() func() Middleware {
   return next
 }
 
-func (router *Router) Add(method HttpMethod, path string, handler HttpHandleFunc) *Route {
-  route := NewRoute(path, handler)
+func (router *Router) Add(method HttpMethod, path string, handlers ...HttpHandleFunc) *Route {
+  route := NewRoute(path, handlers...)
   router.addRoute(method, route)
 
   return route
@@ -54,31 +54,31 @@ func (router *Router) addRoute(method HttpMethod, route *Route) {
   router.routes[method] = append(router.routes[method], route)
 }
 
-func (router *Router) Get(path string, handler HttpHandleFunc) *Route {
-  route := router.Add(HttpMethod("GET"), path, handler)
+func (router *Router) Get(path string, handlers ...HttpHandleFunc) *Route {
+  route := router.Add(HttpMethod("GET"), path, handlers...)
   router.addRoute(HttpMethod("HEAD"), route)
 
   return route
 }
 
-func (router *Router) Post(path string, handler HttpHandleFunc) *Route {
-  return router.Add(HttpMethod("POST"), path, handler)
+func (router *Router) Post(path string, handlers ...HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("POST"), path, handlers...)
 }
 
-func (router *Router) Delete(path string, handler HttpHandleFunc) *Route {
-  return router.Add(HttpMethod("DELETE"), path, handler)
+func (router *Router) Delete(path string, handlers ...HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("DELETE"), path, handlers...)
 }
 
-func (router *Router) Put(path string, handler HttpHandleFunc) *Route {
-  return router.Add(HttpMethod("PUT"), path, handler)
+func (router *Router) Put(path string, handlers ...HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("PUT"), path, handlers...)
 }
 
-func (router *Router) Patch(path string, handler HttpHandleFunc) *Route {
-  return router.Add(HttpMethod("PATCH"), path, handler)
+func (router *Router) Patch(path string, handlers ...HttpHandleFunc) *Route {
+  return router.Add(HttpMethod("PATCH"), path, handlers...)
 }
 
-func (router *Router) AddBeforeFilter(beforeFilter HttpHandleFunc) *Router {
-  router.beforeFilters = append(router.beforeFilters, beforeFilter)
+func (router *Router) AddBeforeFilter(beforeFilters ...HttpHandleFunc) *Router {
+  router.beforeFilters = append(router.beforeFilters, beforeFilters...)
 
   return router
 }

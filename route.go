@@ -9,9 +9,9 @@ import (
 type HttpHandleFunc func(ResponseWriter, *http.Request)
 
 type Route struct {
-  Path string
-  PathRegexp *regexp.Regexp
-  Handler HttpHandleFunc
+  Path          string
+  PathRegexp    *regexp.Regexp
+  Handlers      []HttpHandleFunc
   beforeFilters []HttpHandleFunc
 }
 
@@ -21,11 +21,13 @@ func (route *Route) AddBeforeFilter(beforeFilter HttpHandleFunc) *Route {
   return route
 }
 
-func NewRoute(path string, handler HttpHandleFunc) *Route {
-  route := &Route{}
-  route.Path = path
-  route.Handler = handler
-  route.PathRegexp = regexp.MustCompile(pathToRegexpString(path))
+func NewRoute(path string, handlers ...HttpHandleFunc) *Route {
+  route := &Route{
+    Path:       path,
+    Handlers:   handlers,
+    PathRegexp: regexp.MustCompile(pathToRegexpString(path)),
+  }
+
   return route
 }
 

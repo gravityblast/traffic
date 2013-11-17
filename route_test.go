@@ -10,12 +10,14 @@ import (
 )
 
 func httpHandlerExample(r ResponseWriter, req *http.Request) {}
+func httpHandlerExample2(r ResponseWriter, req *http.Request) {}
 
 func TestNewRoute(t *testing.T) {
   path := "/categories/:category_id/posts/:id"
-  route := NewRoute(path, httpHandlerExample)
+  route := NewRoute(path, httpHandlerExample, httpHandlerExample2)
   assert.Type(t, "*traffic.Route", route)
   assert.Equal(t, path, route.Path)
+  assert.Equal(t, 2, len(route.Handlers))
 
   expectedPathRegexp := regexp.MustCompile(`\A/categories/(?P<category_id>[^/#?]+)/posts/(?P<id>[^/#?]+)\z`)
   assert.Equal(t, expectedPathRegexp, route.PathRegexp)
