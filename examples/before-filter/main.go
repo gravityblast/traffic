@@ -55,9 +55,7 @@ func main() {
           AddBeforeFilter(checkPrivatePageApiKey)
 
   // Executed before all handlers
-  router.AddBeforeFilter(checkApiKey).
-         AddBeforeFilter(addAppNameHeader).
-         AddBeforeFilter(addTimeHeader)
+  router.AddBeforeFilter(checkApiKey, addAppNameHeader, addTimeHeader)
 
   router.Run()
 }

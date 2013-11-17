@@ -109,6 +109,10 @@ func initTemplateManager() {
   templateManager = newTemplateManager()
 }
 
-func Render(w ResponseWriter, template string, data interface{}) {
-  templateManager.renderFunc(w, template, data)
+func Render(w ResponseWriter, template string, data... interface{}) {
+  if len(data) == 0 {
+    templateManager.renderFunc(w, template, nil)
+  } else {
+    templateManager.renderFunc(w, template, data[0])
+  }
 }

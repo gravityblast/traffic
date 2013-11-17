@@ -9,13 +9,18 @@ type ResponseData struct {
   Message string
 }
 
-func rootHandler(w traffic.ResponseWriter, r *http.Request) {
+func indexHandler(w traffic.ResponseWriter, r *http.Request) {
   responseData := &ResponseData{ "Hello World" }
   traffic.Render(w, "index", responseData)
 }
 
+func aboutHandler(w traffic.ResponseWriter, r *http.Request) {
+  traffic.Render(w, "about")
+}
+
 func main() {
   router := traffic.New()
-  router.Get("/", rootHandler)
+  router.Get("/", indexHandler)
+  router.Get("/about/?", aboutHandler)
   router.Run()
 }
