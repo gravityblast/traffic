@@ -12,7 +12,7 @@ type ResponseWriter interface {
   Written() bool
 }
 
-type AppResponseWriter struct {
+type responseWriter struct {
   http.ResponseWriter
   written             bool
   statusCode          int
@@ -21,7 +21,7 @@ type AppResponseWriter struct {
   beforeWriteHandlers []func()
 }
 
-func (w *AppResponseWriter) Write(data []byte) (n int, err error) {
+func (w *responseWriter) Write(data []byte) (n int, err error) {
   if !w.written {
     w.written = true
   }
@@ -29,25 +29,25 @@ func (w *AppResponseWriter) Write(data []byte) (n int, err error) {
   return w.ResponseWriter.Write(data)
 }
 
-func (w *AppResponseWriter) WriteHeader(statusCode int) {
+func (w *responseWriter) WriteHeader(statusCode int) {
   w.statusCode = statusCode
   w.ResponseWriter.WriteHeader(statusCode)
   w.written = true
 }
 
-func (w *AppResponseWriter) StatusCode() int {
+func (w *responseWriter) StatusCode() int {
   return w.statusCode
 }
 
-func (w *AppResponseWriter) SetVar(key string, value interface{}) {
+func (w *responseWriter) SetVar(key string, value interface{}) {
   w.env[key] = value
 }
 
-func (w *AppResponseWriter) Written() bool {
+func (w *responseWriter) Written() bool {
   return w.written
 }
 
-func (w *AppResponseWriter) GetVar(key string) interface{} {
+func (w *responseWriter) GetVar(key string) interface{} {
   // local env
   value := w.env[key]
   if value != nil {
@@ -64,8 +64,8 @@ func (w *AppResponseWriter) GetVar(key string) interface{} {
   return GetVar(key)
 }
 
-func newAppResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface{}) *AppResponseWriter {
-  arw := &AppResponseWriter{
+func newResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface{}) *responseWriter {
+  rw := &responseWriter{
     ResponseWriter:       w,
     statusCode:           http.StatusOK,
     env:                  make(map[string]interface{}),
@@ -73,6 +73,6 @@ func newAppResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface
     beforeWriteHandlers:  make([]func(), 0),
   }
 
-  return arw
+  return rw
 }
 

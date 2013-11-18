@@ -13,9 +13,9 @@ func newTestRequest(method, path string) (ResponseWriter, *httptest.ResponseReco
   recorder := httptest.NewRecorder()
 
   env := make(map[string]interface{})
-  appResponseWriter := newAppResponseWriter(recorder, &env)
+  responseWriter := newResponseWriter(recorder, &env)
 
-  return appResponseWriter, recorder, request
+  return responseWriter, recorder, request
 }
 
 func newTestRouterMiddleware() *RouterMiddleware {
