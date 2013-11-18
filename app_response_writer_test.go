@@ -2,7 +2,6 @@ package traffic
 
 import (
   "testing"
-  "reflect"
   "net/http"
   "net/http/httptest"
   assert "github.com/pilu/miniassert"
@@ -57,50 +56,27 @@ func TestAppResponseWriter_GetVar(t *testing.T) {
   resetGlobalEnv()
 }
 
-func TestAppResponseWriter_AddBeforeWriteHandler(t *testing.T) {
-  routerEnv := make(map[string]interface{})
-  arw := newTestAppResponseWriter(&routerEnv)
-
-
-  handler := func() {}
-  arw.AddBeforeWriteHandler(handler)
-
-  assert.Equal(t, 1, len(arw.beforeWriteHandlers))
-  assert.Equal(t, reflect.ValueOf(handler), reflect.ValueOf(arw.beforeWriteHandlers[0]))
-}
-
-type beforeWriteHandlerTest struct {
-  calls int
-}
-
-func (b *beforeWriteHandlerTest) handler() {
-  b.calls++
-}
-
 func TestAppResponseWriter_Write(t *testing.T) {
   routerEnv := make(map[string]interface{})
   arw, recorder := buildTestAppResponseWriter(&routerEnv)
 
-  handler_1 := &beforeWriteHandlerTest{}
-  handler_2 := &beforeWriteHandlerTest{}
-  arw.AddBeforeWriteHandler(handler_1.handler)
-  arw.AddBeforeWriteHandler(handler_2.handler)
-
   assert.False(t, arw.Written())
-  assert.Equal(t, 0, handler_1.calls)
-  assert.Equal(t, 0, handler_2.calls)
 
   arw.Write([]byte("foo"))
 
   assert.True(t, arw.Written())
-  assert.Equal(t, 1, handler_1.calls)
-  assert.Equal(t, 1, handler_2.calls)
   assert.Equal(t, []byte("foo"), recorder.Body.Bytes())
+}
 
-  arw.Write([]byte("bar"))
+func TestAppResponseWriter_WriteHeader(t *testing.T) {
+  routerEnv := make(map[string]interface{})
+  arw, recorder := buildTestAppResponseWriter(&routerEnv)
 
-  // handlers are not called the second time we call Write
-  assert.Equal(t, 1, handler_1.calls)
-  assert.Equal(t, 1, handler_2.calls)
-  assert.Equal(t, []byte("foobar"), recorder.Body.Bytes())
+  assert.False(t, arw.Written())
+
+  arw.WriteHeader(http.StatusUnauthorized)
+
+  assert.True(t, arw.Written())
+  assert.Equal(t, http.StatusUnauthorized, arw.StatusCode())
+  assert.Equal(t, http.StatusUnauthorized, recorder.Code)
 }
