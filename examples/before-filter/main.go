@@ -7,39 +7,38 @@ import (
   "github.com/pilu/traffic"
 )
 
-func rootHandler(w traffic.ResponseWriter, r *http.Request) {
+func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
   fmt.Fprint(w, "Hello World\n")
 }
 
-func privatePageHandler(w traffic.ResponseWriter, r *http.Request) {
+func privatePageHandler(w traffic.ResponseWriter, r *traffic.Request) {
   fmt.Fprint(w, "Hello Private Page\n")
 }
 
-func pageHandler(w traffic.ResponseWriter, r *http.Request) {
-  params := r.URL.Query()
-  fmt.Fprintf(w, "Category ID: %s\n", params.Get("category_id"))
-  fmt.Fprintf(w, "Page ID: %s\n", params.Get("id"))
+func pageHandler(w traffic.ResponseWriter, r *traffic.Request) {
+  fmt.Fprintf(w, "Category ID: %s\n", r.Param("category_id"))
+  fmt.Fprintf(w, "Page ID: %s\n", r.Param("id"))
 }
 
-func checkApiKey(w traffic.ResponseWriter, r *http.Request) {
-  params := r.URL.Query()
-  if params.Get("api_key") != "foo" {
+func checkApiKey(w traffic.ResponseWriter, r *traffic.Request) {
+  if r.Param("api_key") != "foo" {
     w.WriteHeader(http.StatusUnauthorized)
+    fmt.Fprint(w, "Not authorized\n")
   }
 }
 
-func checkPrivatePageApiKey(w traffic.ResponseWriter, r *http.Request) {
-  params := r.URL.Query()
-  if params.Get("private_api_key") != "bar" {
+func checkPrivatePageApiKey(w traffic.ResponseWriter, r *traffic.Request) {
+  if r.Param("private_api_key") != "bar" {
     w.WriteHeader(http.StatusUnauthorized)
+    fmt.Fprint(w, "Not authorized\n")
   }
 }
 
-func addAppNameHeader(w traffic.ResponseWriter, r *http.Request) {
+func addAppNameHeader(w traffic.ResponseWriter, r *traffic.Request) {
   w.Header().Add("X-APP-NAME", "My App")
 }
 
-func addTimeHeader(w traffic.ResponseWriter, r *http.Request) {
+func addTimeHeader(w traffic.ResponseWriter, r *traffic.Request) {
   t := fmt.Sprintf("%s", time.Now())
   w.Header().Add("X-APP-TIME", t)
 }

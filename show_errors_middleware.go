@@ -5,7 +5,6 @@ import (
   "bufio"
   "runtime"
   "strings"
-  "net/http"
   "html/template"
 )
 
@@ -39,7 +38,7 @@ func (middleware ShowErrorsMiddleware) readErrorFileLines(filePath string, error
   return lines
 }
 
-func (middleware ShowErrorsMiddleware) RenderError(w ResponseWriter, r *http.Request, err interface{}, stack []byte) {
+func (middleware ShowErrorsMiddleware) RenderError(w ResponseWriter, r *Request, err interface{}, stack []byte) {
   _, filePath, line, _ := runtime.Caller(5)
 
   data := map[string]interface{} {
@@ -57,7 +56,7 @@ func (middleware ShowErrorsMiddleware) RenderError(w ResponseWriter, r *http.Req
   tpl.Execute(w, data)
 }
 
-func (middleware ShowErrorsMiddleware) ServeHTTP(w ResponseWriter, r *http.Request, next NextMiddlewareFunc) (ResponseWriter, *http.Request) {
+func (middleware ShowErrorsMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) (ResponseWriter, *Request) {
   defer func() {
     if err := recover(); err != nil {
       const size = 4096

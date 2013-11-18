@@ -2,7 +2,6 @@ package main
 
 import (
   "fmt"
-  "net/http"
   "github.com/pilu/traffic"
 )
 
@@ -12,7 +11,7 @@ type PingMiddleware struct {}
 // Otherwise it sets the variable "PING" with PONG as value and calls the next  middleware.
 // The next middleware and the final handler can get that variable with:
 //   w.GetVar("ping")
-func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *http.Request, next traffic.NextMiddlewareFunc) (traffic.ResponseWriter, *http.Request) {
+func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *traffic.Request, next traffic.NextMiddlewareFunc) (traffic.ResponseWriter, *traffic.Request) {
   if r.URL.Path == "/ping" {
     fmt.Fprint(w, "pong\n")
 
@@ -27,7 +26,7 @@ func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *http.Request, ne
   return w, r
 }
 
-func root(w traffic.ResponseWriter, r *http.Request) {
+func root(w traffic.ResponseWriter, r *traffic.Request) {
   fmt.Fprintf(w, "Router var foo: %v.\n", w.GetVar("foo"))
   fmt.Fprintf(w, "Middleware var ping: %v\n", w.GetVar("ping"))
 }

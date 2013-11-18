@@ -2,7 +2,6 @@ package traffic
 
 import (
   "testing"
-  "net/http"
   "reflect"
   assert "github.com/pilu/miniassert"
 )
@@ -79,8 +78,8 @@ func TestRouter_AddBeforeFilter(t *testing.T) {
   router := New()
   assert.Equal(t, 0, len(router.beforeFilters))
 
-  filterA := HttpHandleFunc(func(w ResponseWriter, r *http.Request) {})
-  filterB := HttpHandleFunc(func(w ResponseWriter, r *http.Request) {})
+  filterA := HttpHandleFunc(func(w ResponseWriter, r *Request) {})
+  filterB := HttpHandleFunc(func(w ResponseWriter, r *Request) {})
 
   router.AddBeforeFilter(filterA)
   assert.Equal(t, 1, len(router.beforeFilters))

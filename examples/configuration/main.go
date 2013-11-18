@@ -2,11 +2,10 @@ package main
 
 import (
   "fmt"
-  "net/http"
   "github.com/pilu/traffic"
 )
 
-func rootHandler(w traffic.ResponseWriter, r *http.Request) {
+func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
   fmt.Fprintf(w, "%s<br />", w.GetVar("foo"))
 
   // run with TRAFFIC_ENV=production to get the "bar" value

@@ -19,7 +19,7 @@ func init() {
   http.Handle("/", t)
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
   traffic.Render(w, "index", struct{
     Message string
   }{

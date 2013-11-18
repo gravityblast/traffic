@@ -11,12 +11,14 @@ import (
 
 type HttpMethod string
 
-type ErrorHandlerFunc func(ResponseWriter, *http.Request, interface{})
+type ErrorHandlerFunc func(ResponseWriter, *Request, interface{})
 
 type NextMiddlewareFunc func() Middleware
 
+type HttpHandleFunc func(ResponseWriter, *Request)
+
 type Middleware interface {
-  ServeHTTP(ResponseWriter, *http.Request, NextMiddlewareFunc) (ResponseWriter, *http.Request)
+  ServeHTTP(ResponseWriter, *Request, NextMiddlewareFunc) (ResponseWriter, *Request)
 }
 
 type Router struct {
@@ -83,7 +85,7 @@ func (router *Router) AddBeforeFilter(beforeFilters ...HttpHandleFunc) *Router {
   return router
 }
 
-func (router *Router) handleNotFound(w ResponseWriter, r *http.Request) {
+func (router *Router) handleNotFound(w ResponseWriter, r *Request) {
   if router.NotFoundHandler != nil {
     router.NotFoundHandler(w, r)
   } else {
@@ -91,7 +93,7 @@ func (router *Router) handleNotFound(w ResponseWriter, r *http.Request) {
   }
 }
 
-func (router *Router) handlePanic(w ResponseWriter, r *http.Request, err interface{}) {
+func (router *Router) handlePanic(w ResponseWriter, r *Request, err interface{}) {
   if router.ErrorHandler != nil {
     w.WriteHeader(http.StatusInternalServerError)
     router.ErrorHandler(w, r, err)
@@ -107,9 +109,11 @@ func (router *Router) handlePanic(w ResponseWriter, r *http.Request, err interfa
   logger.Printf("%s\n", string(stack))
 }
 
-func (router *Router) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-  w := newResponseWriter(rw, &router.env)
+func (router *Router) ServeHTTP(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
+  w := newResponseWriter(httpResponseWriter, &router.env)
   w.Header().Set("Content-Type", "text/html")
+
+  r := newRequest(httpRequest)
 
   defer func() {
     if recovered := recover(); recovered != nil {

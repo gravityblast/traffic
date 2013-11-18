@@ -8,9 +8,10 @@ import (
   assert "github.com/pilu/miniassert"
 )
 
-func newTestRequest(method, path string) (ResponseWriter, *httptest.ResponseRecorder, *http.Request) {
-  request, _ := http.NewRequest(method, path, nil)
-  recorder := httptest.NewRecorder()
+func newTestRequest(method, path string) (ResponseWriter, *httptest.ResponseRecorder, *Request) {
+  r, _      := http.NewRequest(method, path, nil)
+  request   := newRequest(r)
+  recorder  := httptest.NewRecorder()
 
   env := make(map[string]interface{})
   responseWriter := newResponseWriter(recorder, &env)
@@ -42,7 +43,7 @@ func TestRouterMiddleware_Found(t *testing.T) {
   routerMiddleware := newTestRouterMiddleware()
   responseWriter, recorder, request := newTestRequest("GET", "/")
 
-  testRootHandler := func (w ResponseWriter, r *http.Request) {
+  testRootHandler := func (w ResponseWriter, r *Request) {
     fmt.Fprint(w, "Hello World")
   }
 

@@ -1,12 +1,9 @@
 package traffic
 
 import (
-  "net/http"
   "net/url"
   "regexp"
 )
-
-type HttpHandleFunc func(ResponseWriter, *http.Request)
 
 type Route struct {
   Path          string

@@ -3,14 +3,13 @@ package traffic
 import (
   "testing"
   "regexp"
-  "net/http"
   "net/url"
   "reflect"
   assert "github.com/pilu/miniassert"
 )
 
-func httpHandlerExample(r ResponseWriter, req *http.Request) {}
-func httpHandlerExample2(r ResponseWriter, req *http.Request) {}
+func httpHandlerExample(r ResponseWriter, req *Request) {}
+func httpHandlerExample2(r ResponseWriter, req *Request) {}
 
 func TestNewRoute(t *testing.T) {
   path := "/categories/:category_id/posts/:id"
@@ -103,8 +102,8 @@ func TestRoute_Match_WithOptionalSegments(t *testing.T) {
 func TestRoute_AddBeforeFilterToRoute(t *testing.T) {
   route := NewRoute("/", httpHandlerExample)
   assert.Equal(t, 0, len(route.beforeFilters))
-  filterA := HttpHandleFunc(func(w ResponseWriter, r *http.Request) {})
-  filterB := HttpHandleFunc(func(w ResponseWriter, r *http.Request) {})
+  filterA := HttpHandleFunc(func(w ResponseWriter, r *Request) {})
+  filterB := HttpHandleFunc(func(w ResponseWriter, r *Request) {})
 
   route.AddBeforeFilter(filterA)
   assert.Equal(t, 1, len(route.beforeFilters))
