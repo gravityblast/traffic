@@ -1,7 +1,10 @@
 package traffic
 
 import (
+  "fmt"
   "net/http"
+  "encoding/json"
+  "encoding/xml"
 )
 
 type ResponseWriter interface {
@@ -11,6 +14,9 @@ type ResponseWriter interface {
   StatusCode() int
   Written() bool
   RenderTemplate(string, ...interface{})
+  RenderJSON(data interface{})
+  RenderXML(data interface{})
+  RenderText(string, ...interface{})
 }
 
 type responseWriter struct {
@@ -67,6 +73,20 @@ func (w *responseWriter) GetVar(key string) interface{} {
 
 func (w *responseWriter) RenderTemplate(templateName string, data ...interface{}) {
   RenderTemplate(w, templateName, data...)
+}
+
+func (w *responseWriter) RenderJSON(data interface{}) {
+  w.Header().Set("Content-Type", "application/json; charset=utf-8")
+  json.NewEncoder(w).Encode(data)
+}
+
+func (w *responseWriter) RenderXML(data interface{}) {
+  w.Header().Set("Content-Type", "application/xml; charset=utf-8")
+  xml.NewEncoder(w).Encode(data)
+}
+
+func (w *responseWriter) RenderText(textFormat string, data ...interface{}) {
+  fmt.Fprintf(w, textFormat, data...)
 }
 
 func newResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface{}) *responseWriter {

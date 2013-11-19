@@ -111,7 +111,7 @@ func (router *Router) handlePanic(w ResponseWriter, r *Request, err interface{})
 
 func (router *Router) ServeHTTP(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
   w := newResponseWriter(httpResponseWriter, &router.env)
-  w.Header().Set("Content-Type", "text/html")
+  w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
   r := newRequest(httpRequest)
 
