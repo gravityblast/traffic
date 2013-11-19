@@ -22,8 +22,22 @@ type TemplateManager struct {
   templatesParseError error
 }
 
+var templateFuncs = make(map[string]interface{})
+
+func TemplateFuncs(funcs map[string]interface{}) {
+  for name, fn := range funcs {
+    TemplateFunc(name, fn)
+  }
+}
+
+func TemplateFunc(name string, fn interface{}) {
+  templateFuncs[name] = fn
+}
+
 func (t *TemplateManager) loadTemplates() {
   t.templates = template.New("templates")
+  t.templates.Funcs(templateFuncs)
+
   if t.viewsBasePath == "" {
     panic("views base path is blank")
   }
