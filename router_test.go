@@ -1,6 +1,7 @@
 package traffic
 
 import (
+  "fmt"
   "testing"
   "reflect"
   "net/http"
@@ -117,4 +118,36 @@ func TestRouter_ServeHTTP_NotFound(t *testing.T) {
   router.ServeHTTP(recorder, request)
 
   assert.Equal(t, "404 page not found", string(recorder.Body.Bytes()))
+
+  router.NotFoundHandler = func(w ResponseWriter, r *Request) {
+    fmt.Fprint(w, "custom 404 messages")
+  }
+
+  request, _  = http.NewRequest("GET", "/", nil)
+  recorder = httptest.NewRecorder()
+  router.ServeHTTP(recorder, request)
+
+  assert.Equal(t, "custom 404 messages", string(recorder.Body.Bytes()))
+
+  // test-1 handler writes header but does't write in the body.
+  router.Get("/test-1", func(w ResponseWriter, r *Request) {
+    w.WriteHeader(http.StatusNotFound)
+  })
+
+  request, _  = http.NewRequest("GET", "/test-1", nil)
+  recorder = httptest.NewRecorder()
+  router.ServeHTTP(recorder, request)
+  assert.Equal(t, "custom 404 messages", string(recorder.Body.Bytes()))
+
+  // test-2 handler sends a 404 but write in the body too,
+  // so the custom not found handler should not be called.
+  router.Get("/test-2", func(w ResponseWriter, r *Request) {
+    w.WriteHeader(http.StatusNotFound)
+    fmt.Fprint(w, "test 2 body")
+  })
+
+  request, _  = http.NewRequest("GET", "/test-2", nil)
+  recorder = httptest.NewRecorder()
+  router.ServeHTTP(recorder, request)
+  assert.Equal(t, "test 2 body", string(recorder.Body.Bytes()))
 }

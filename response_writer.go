@@ -23,10 +23,8 @@ type responseWriter struct {
 }
 
 func (w *responseWriter) Write(data []byte) (n int, err error) {
-  if !w.written {
-    w.written = true
-    w.bodyWritten = true
-  }
+  w.written     = true
+  w.bodyWritten = true
 
   return w.ResponseWriter.Write(data)
 }
