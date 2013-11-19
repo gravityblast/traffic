@@ -20,7 +20,7 @@ func init() {
 }
 
 func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  traffic.Render(w, "index", struct{
+  w.RenderTemplate(w, "index", struct{
     Message string
   }{
     "Hello Google App Engine",

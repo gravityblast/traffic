@@ -15,7 +15,7 @@ func pageHandler(w traffic.ResponseWriter, r *traffic.Request) {
     PagePath: pagePath,
   }
 
-  traffic.Render(w, "index", responseData)
+  w.RenderTemplate("index", responseData)
 }
 
 func main() {

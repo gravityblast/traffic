@@ -10,11 +10,11 @@ type ResponseData struct {
 
 func indexHandler(w traffic.ResponseWriter, r *traffic.Request) {
   responseData := &ResponseData{ "Hello World" }
-  traffic.Render(w, "index", responseData)
+  w.RenderTemplate("index", responseData)
 }
 
 func aboutHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  traffic.Render(w, "about")
+  w.RenderTemplate("about")
 }
 
 func main() {

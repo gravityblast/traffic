@@ -10,6 +10,7 @@ type ResponseWriter interface {
   GetVar(string) interface{}
   StatusCode() int
   Written() bool
+  RenderTemplate(string, ...interface{})
 }
 
 type responseWriter struct {
@@ -62,6 +63,10 @@ func (w *responseWriter) GetVar(key string) interface{} {
 
   // global env
   return GetVar(key)
+}
+
+func (w *responseWriter) RenderTemplate(templateName string, data ...interface{}) {
+  RenderTemplate(w, templateName, data...)
 }
 
 func newResponseWriter(w http.ResponseWriter, routerEnv *map[string]interface{}) *responseWriter {
