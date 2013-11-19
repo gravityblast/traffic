@@ -15,6 +15,7 @@ type ResponseWriter interface {
 type responseWriter struct {
   http.ResponseWriter
   written             bool
+  bodyWritten         bool
   statusCode          int
   env                 map[string]interface{}
   routerEnv           *map[string]interface{}
@@ -24,6 +25,7 @@ type responseWriter struct {
 func (w *responseWriter) Write(data []byte) (n int, err error) {
   if !w.written {
     w.written = true
+    w.bodyWritten = true
   }
 
   return w.ResponseWriter.Write(data)

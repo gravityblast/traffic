@@ -3,6 +3,8 @@ package traffic
 import (
   "testing"
   "reflect"
+  "net/http"
+  "net/http/httptest"
   assert "github.com/pilu/miniassert"
 )
 
@@ -91,19 +93,28 @@ func TestRouter_AddBeforeFilter(t *testing.T) {
 }
 
 func TestRouter_SetVar(t *testing.T) {
-  resetGlobalEnv()
+  defer resetGlobalEnv()
   router := New()
   router.SetVar("foo", "bar")
   assert.Equal(t, "bar", router.env["foo"])
-  resetGlobalEnv()
 }
 
 func TestRouter_GetVar(t *testing.T) {
-  resetGlobalEnv()
+  defer resetGlobalEnv()
   router := New()
   env["global-foo"] = "global-foo"
   assert.Equal(t, "global-foo", router.GetVar("global-foo"))
   router.env["global-foo"] = "router-foo"
   assert.Equal(t, "router-foo", router.GetVar("global-foo"))
-  resetGlobalEnv()
+}
+
+func TestRouter_ServeHTTP_NotFound(t *testing.T) {
+  defer resetGlobalEnv()
+  SetVar("env", "test")
+  router := New()
+  request, _  := http.NewRequest("GET", "/", nil)
+  recorder    := httptest.NewRecorder()
+  router.ServeHTTP(recorder, request)
+
+  assert.Equal(t, "404 page not found", string(recorder.Body.Bytes()))
 }

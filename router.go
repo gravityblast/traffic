@@ -126,7 +126,7 @@ func (router *Router) ServeHTTP(httpResponseWriter http.ResponseWriter, httpRequ
     nextMiddleware.ServeHTTP(w, r, nextMiddlewareFunc)
   }
 
-  if w.StatusCode() == http.StatusNotFound && !w.Written() {
+  if w.StatusCode() == http.StatusNotFound && !w.bodyWritten {
     router.handleNotFound(w, r)
   }
 }
