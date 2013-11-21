@@ -1,21 +1,20 @@
 package main
 
 import (
-  "fmt"
   "github.com/pilu/traffic"
 )
 
 func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  fmt.Fprint(w, "Hello World\n")
+  w.WriteText("Hello World\n")
 }
 
 func pageHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  fmt.Fprintf(w, "Category ID: %s\n", r.Param("category_id"))
-  fmt.Fprintf(w, "Page ID: %s\n", r.Param("id"))
+  w.WriteText("Category ID: %s\n", r.Param("category_id"))
+  w.WriteText("Page ID: %s\n", r.Param("id"))
 }
 
 func customNotFoundHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  fmt.Fprintf(w, "Page not found: %s\n", r.URL.Path)
+  w.WriteText("Page not found: %s\n", r.URL.Path)
 }
 
 func main() {

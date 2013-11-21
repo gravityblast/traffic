@@ -8,29 +8,29 @@ import (
 )
 
 func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  fmt.Fprint(w, "Hello World\n")
+  w.WriteText("Hello World\n")
 }
 
 func privatePageHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  fmt.Fprint(w, "Hello Private Page\n")
+  w.WriteText("Hello Private Page\n")
 }
 
 func pageHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  fmt.Fprintf(w, "Category ID: %s\n", r.Param("category_id"))
-  fmt.Fprintf(w, "Page ID: %s\n", r.Param("id"))
+  w.WriteText("Category ID: %s\n", r.Param("category_id"))
+  w.WriteText("Page ID: %s\n", r.Param("id"))
 }
 
 func checkApiKey(w traffic.ResponseWriter, r *traffic.Request) {
   if r.Param("api_key") != "foo" {
     w.WriteHeader(http.StatusUnauthorized)
-    fmt.Fprint(w, "Not authorized\n")
+    w.WriteText("Not authorized\n")
   }
 }
 
 func checkPrivatePageApiKey(w traffic.ResponseWriter, r *traffic.Request) {
   if r.Param("private_api_key") != "bar" {
     w.WriteHeader(http.StatusUnauthorized)
-    fmt.Fprint(w, "Not authorized\n")
+    w.WriteText("Not authorized\n")
   }
 }
 

@@ -1,13 +1,12 @@
 package main
 
 import (
-  "fmt"
   "github.com/pilu/traffic"
 )
 
 func errorHandler(w traffic.ResponseWriter, r *traffic.Request, err interface{}) {
-  fmt.Fprint(w, "This is a custom error page <br />\n")
-  fmt.Fprintf(w, "Recovered from `%v`", err)
+  w.WriteText("This is a custom error page <br />\n")
+  w.WriteText("Recovered from `%v`", err)
 }
 
 func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {

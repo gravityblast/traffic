@@ -1,20 +1,19 @@
 package main
 
 import (
-  "fmt"
   "github.com/pilu/traffic"
 )
 
 func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
   traffic.Logger().Print("Hello")
-  fmt.Fprint(w, "Hello World\n")
+  w.WriteText("Hello World\n")
 }
 
 func jsonTestHandler(w traffic.ResponseWriter, r *traffic.Request) {
   data := map[string]string{
     "foo": "bar",
   }
-  w.RenderJSON(data)
+  w.WriteJSON(data)
 }
 
 func xmlTestHandler(w traffic.ResponseWriter, r *traffic.Request) {
@@ -23,15 +22,15 @@ func xmlTestHandler(w traffic.ResponseWriter, r *traffic.Request) {
     LastName  string   `xml:"name>last"`
   }
 
-  w.RenderXML(&Person{
+  w.WriteXML(&Person{
     FirstName:  "foo",
     LastName:   "bar",
   })
 }
 
 func pageHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  w.RenderText("Category ID: %s\n", r.Param("category_id"))
-  w.RenderText("Page ID: %s\n", r.Param("id"))
+  w.WriteText("Category ID: %s\n", r.Param("category_id"))
+  w.WriteText("Page ID: %s\n", r.Param("id"))
 }
 
 func main() {

@@ -13,10 +13,10 @@ type ResponseWriter interface {
   GetVar(string) interface{}
   StatusCode() int
   Written() bool
-  RenderTemplate(string, ...interface{})
-  RenderJSON(data interface{})
-  RenderXML(data interface{})
-  RenderText(string, ...interface{})
+  Render(string, ...interface{})
+  WriteJSON(data interface{})
+  WriteXML(data interface{})
+  WriteText(string, ...interface{})
 }
 
 type responseWriter struct {
@@ -71,21 +71,21 @@ func (w *responseWriter) GetVar(key string) interface{} {
   return GetVar(key)
 }
 
-func (w *responseWriter) RenderTemplate(templateName string, data ...interface{}) {
+func (w *responseWriter) Render(templateName string, data ...interface{}) {
   RenderTemplate(w, templateName, data...)
 }
 
-func (w *responseWriter) RenderJSON(data interface{}) {
+func (w *responseWriter) WriteJSON(data interface{}) {
   w.Header().Set("Content-Type", "application/json; charset=utf-8")
   json.NewEncoder(w).Encode(data)
 }
 
-func (w *responseWriter) RenderXML(data interface{}) {
+func (w *responseWriter) WriteXML(data interface{}) {
   w.Header().Set("Content-Type", "application/xml; charset=utf-8")
   xml.NewEncoder(w).Encode(data)
 }
 
-func (w *responseWriter) RenderText(textFormat string, data ...interface{}) {
+func (w *responseWriter) WriteText(textFormat string, data ...interface{}) {
   fmt.Fprintf(w, textFormat, data...)
 }
 
