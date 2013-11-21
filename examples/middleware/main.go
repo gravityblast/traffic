@@ -34,7 +34,7 @@ func root(w traffic.ResponseWriter, r *traffic.Request) {
 func main() {
   t := traffic.New()
   // Add PingMiddleware
-  t.AddMiddleware(&PingMiddleware{})
+  t.Use(&PingMiddleware{})
   // Set router var "foo"
   t.SetVar("foo", "bar")
   // Add root handler

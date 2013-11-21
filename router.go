@@ -131,7 +131,7 @@ func (router *Router) ServeHTTP(httpResponseWriter http.ResponseWriter, httpRequ
   }
 }
 
-func (router *Router) AddMiddleware(middleware Middleware) {
+func (router *Router) Use(middleware Middleware) {
   router.middlewares = append([]Middleware{middleware}, router.middlewares...)
 }
 
@@ -150,16 +150,16 @@ func (router *Router) GetVar(key string) interface{} {
 
 func addDevelopmentMiddlewares(router *Router) {
   // Static middleware
-  router.AddMiddleware(NewStaticMiddleware(PublicPath()))
+  router.Use(NewStaticMiddleware(PublicPath()))
 
   // Logger middleware
   loggerMiddleware := &LoggerMiddleware{
     router: router,
   }
-  router.AddMiddleware(loggerMiddleware)
+  router.Use(loggerMiddleware)
 
   // ShowErrors middleware
-  router.AddMiddleware(&ShowErrorsMiddleware{})
+  router.Use(&ShowErrorsMiddleware{})
 }
 
 func (router *Router) Run() {
@@ -207,7 +207,7 @@ func New() *Router {
   }
 
   routerMiddleware := &RouterMiddleware{ router }
-  router.AddMiddleware(routerMiddleware)
+  router.Use(routerMiddleware)
 
   // Environment
   env := Env()
