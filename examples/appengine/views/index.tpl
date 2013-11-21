@@ -1,4 +1,4 @@
 {{ template "includes/header" }}
-  {{ .Message }} (views/index.tmpl)
+  {{ .Message }} (views/index.tpl)
 {{ template "includes/footer" }}
 

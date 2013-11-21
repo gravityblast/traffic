@@ -1,6 +1,7 @@
 package main
 
 import (
+  "strings"
   "github.com/pilu/traffic"
 )
 
@@ -9,7 +10,7 @@ type ResponseData struct {
 }
 
 func indexHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  responseData := &ResponseData{ "Hello World" }
+  responseData := &ResponseData{ "hello world" }
   w.RenderTemplate("index", responseData)
 }
 
@@ -18,6 +19,9 @@ func aboutHandler(w traffic.ResponseWriter, r *traffic.Request) {
 }
 
 func main() {
+  traffic.TemplateFunc("upcase",    strings.ToUpper)
+  traffic.TemplateFunc("downcase",  strings.ToLower)
+
   router := traffic.New()
   router.Get("/", indexHandler)
   router.Get("/about/?", aboutHandler)

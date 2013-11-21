@@ -4,5 +4,5 @@
   <title>Traffic example</title>
 </head>
 <body>
-  <h1>Header (views/includes/header.tmpl)</h1>
+  <h1>Header (views/includes/header.tpl)</h1>
 

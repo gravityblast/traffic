@@ -1,4 +1,4 @@
-  <p>Footer (views/includes/footer.tmpl)</p>
+  <p>Footer (views/includes/footer.tpl)</p>
 </body>
 </html>
 
