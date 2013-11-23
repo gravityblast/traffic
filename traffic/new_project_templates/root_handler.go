@@ -10,6 +10,6 @@ type ResponseData struct {
 
 func RootHandler(w traffic.ResponseWriter, r *traffic.Request) {
   responseData := &ResponseData{ "Hello World" }
-  w.RenderTemplate("index", responseData)
+  w.Render("index", responseData)
 }
 
