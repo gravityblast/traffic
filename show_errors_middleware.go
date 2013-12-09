@@ -56,7 +56,7 @@ func (middleware ShowErrorsMiddleware) RenderError(w ResponseWriter, r *Request,
   tpl.Execute(w, data)
 }
 
-func (middleware ShowErrorsMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) (ResponseWriter, *Request) {
+func (middleware ShowErrorsMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) {
   defer func() {
     if err := recover(); err != nil {
       const size = 4096
@@ -68,10 +68,8 @@ func (middleware ShowErrorsMiddleware) ServeHTTP(w ResponseWriter, r *Request, n
   }()
 
   if nextMiddleware := next(); nextMiddleware != nil {
-    w, r = nextMiddleware.ServeHTTP(w, r, next)
+    nextMiddleware.ServeHTTP(w, r, next)
   }
-
-  return w, r
 }
 
 const panicPageTpl string = `

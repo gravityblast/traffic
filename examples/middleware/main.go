@@ -10,19 +10,19 @@ type PingMiddleware struct {}
 // Otherwise it sets the variable "PING" with PONG as value and calls the next  middleware.
 // The next middleware and the final handler can get that variable with:
 //   w.GetVar("ping")
-func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *traffic.Request, next traffic.NextMiddlewareFunc) (traffic.ResponseWriter, *traffic.Request) {
+func (c *PingMiddleware) ServeHTTP(w traffic.ResponseWriter, r *traffic.Request, next traffic.NextMiddlewareFunc) {
   if r.URL.Path == "/ping" {
     w.WriteText("pong\n")
 
-    return w, r
+    return
   }
 
   if nextMiddleware := next(); nextMiddleware != nil {
     w.SetVar("ping", "pong")
-    w, r = nextMiddleware.ServeHTTP(w, r, next)
+    nextMiddleware.ServeHTTP(w, r, next)
   }
 
-  return w, r
+  return
 }
 
 func root(w traffic.ResponseWriter, r *traffic.Request) {

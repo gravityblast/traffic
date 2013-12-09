@@ -18,7 +18,7 @@ type NextMiddlewareFunc func() Middleware
 type HttpHandleFunc func(ResponseWriter, *Request)
 
 type Middleware interface {
-  ServeHTTP(ResponseWriter, *Request, NextMiddlewareFunc) (ResponseWriter, *Request)
+  ServeHTTP(ResponseWriter, *Request, NextMiddlewareFunc)
 }
 
 type Router struct {

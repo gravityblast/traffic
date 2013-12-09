@@ -35,18 +35,16 @@ func (middleware BuildErrorsMiddleware) RenderError(w ResponseWriter, r *Request
   tpl.Execute(w, data)
 }
 
-func (middleware BuildErrorsMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) (ResponseWriter, *Request) {
+func (middleware BuildErrorsMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) {
   if _, err := os.Stat(buildErrorFilePath); err == nil {
     middleware.RenderError(w, r)
 
-    return w, r
+    return
   }
 
   if nextMiddleware := next(); nextMiddleware != nil {
-    w, r = nextMiddleware.ServeHTTP(w, r, next)
+    nextMiddleware.ServeHTTP(w, r, next)
   }
-
-  return w, r
 }
 
 const buildPageTpl string = `
