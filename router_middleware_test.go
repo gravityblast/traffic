@@ -8,6 +8,14 @@ import (
   assert "github.com/pilu/miniassert"
 )
 
+type fakeNotFoundHandlerContainer struct {
+  callsCount int
+}
+
+func (f *fakeNotFoundHandlerContainer) Handler(w ResponseWriter, r *Request) {
+  f.callsCount++
+}
+
 func newTestRequest(method, path string) (ResponseWriter, *httptest.ResponseRecorder, *Request) {
   r, _      := http.NewRequest(method, path, nil)
   request   := newRequest(r)
@@ -31,11 +39,14 @@ func newTestRouterMiddleware() *RouterMiddleware {
 
 func TestRouterMiddleware_NotFound(t *testing.T) {
   routerMiddleware := newTestRouterMiddleware()
+  fakeNotFound := new(fakeNotFoundHandlerContainer)
+  routerMiddleware.router.NotFoundHandler = fakeNotFound.Handler
+
   responseWriter, recorder, request := newTestRequest("GET", "/")
   routerMiddleware.ServeHTTP(responseWriter, request, func() Middleware { return nil })
 
-  assert.Equal(t, 1, 1)
-  assert.Equal(t, 404, recorder.Code)
+  // checks that the router middleware calls router.handleNotFound
+  assert.Equal(t, 1, fakeNotFound.callsCount)
   assert.Equal(t, "", string(recorder.Body.Bytes()))
 }
 

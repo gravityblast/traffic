@@ -89,6 +89,7 @@ func (router *Router) handleNotFound(w ResponseWriter, r *Request) {
   if router.NotFoundHandler != nil {
     router.NotFoundHandler(w, r)
   } else {
+    w.WriteHeader(http.StatusNotFound)
     fmt.Fprint(w, "404 page not found")
   }
 }
@@ -124,10 +125,6 @@ func (router *Router) ServeHTTP(httpResponseWriter http.ResponseWriter, httpRequ
   nextMiddlewareFunc := router.MiddlewareEnumerator()
   if nextMiddleware := nextMiddlewareFunc(); nextMiddleware != nil {
     nextMiddleware.ServeHTTP(w, r, nextMiddlewareFunc)
-  }
-
-  if w.StatusCode() == http.StatusNotFound && !w.bodyWritten {
-    router.handleNotFound(w, r)
   }
 }
 

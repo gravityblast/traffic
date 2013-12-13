@@ -29,9 +29,13 @@ func (routerMiddleware *RouterMiddleware) ServeHTTP(w ResponseWriter, r *Request
         }
       }
 
+      if w.StatusCode() == http.StatusNotFound && !w.BodyWritten() {
+        routerMiddleware.router.handleNotFound(w, r)
+      }
+
       return
     }
   }
 
-  w.WriteHeader(http.StatusNotFound)
+  routerMiddleware.router.handleNotFound(w, r)
 }

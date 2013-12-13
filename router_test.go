@@ -112,6 +112,7 @@ func TestRouter_GetVar(t *testing.T) {
 func TestRouter_ServeHTTP_NotFound(t *testing.T) {
   defer resetGlobalEnv()
   SetVar("env", "test")
+
   router := New()
   request, _  := http.NewRequest("GET", "/", nil)
   recorder    := httptest.NewRecorder()

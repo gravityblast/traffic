@@ -1,6 +1,7 @@
 package main
 
 import (
+  "net/http"
   "github.com/pilu/traffic"
 )
 
@@ -14,6 +15,7 @@ func pageHandler(w traffic.ResponseWriter, r *traffic.Request) {
 }
 
 func customNotFoundHandler(w traffic.ResponseWriter, r *traffic.Request) {
+  w.WriteHeader(http.StatusNotFound)
   w.WriteText("Page not found: %s\n", r.URL.Path)
 }
 

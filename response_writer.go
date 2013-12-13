@@ -13,6 +13,7 @@ type ResponseWriter interface {
   GetVar(string) interface{}
   StatusCode() int
   Written() bool
+  BodyWritten() bool
   Render(string, ...interface{})
   WriteJSON(data interface{})
   WriteXML(data interface{})
@@ -52,6 +53,10 @@ func (w *responseWriter) SetVar(key string, value interface{}) {
 
 func (w *responseWriter) Written() bool {
   return w.written
+}
+
+func (w *responseWriter) BodyWritten() bool {
+  return w.bodyWritten
 }
 
 func (w *responseWriter) GetVar(key string) interface{} {
