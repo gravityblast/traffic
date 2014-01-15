@@ -158,8 +158,9 @@ func addDevelopmentMiddlewares(router *Router) {
   // ShowErrors middleware
   router.Use(&ShowErrorsMiddleware{})
 
-  if getStringVar("build_errors_middleware") != "" {
-    router.Use(&BuildErrorsMiddleware{})
+  if os.Getenv("DEV_RUNNER") != "" {
+    Logger().Print("Loading `BuildErrorsMiddleware`")
+    router.Use(newBuildErrorsMiddleware())
   }
 }
 
