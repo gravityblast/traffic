@@ -3,5 +3,6 @@ go: 1.2
 
 install:
   - go get github.com/pilu/config
+  - go get github.com/pilu/fresh
   - go get github.com/pilu/miniassert
 
