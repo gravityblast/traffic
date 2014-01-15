@@ -49,7 +49,7 @@ cd hello
 go build && ./hello
 ```
 
-A command line `runner` is in development. It will build and run the project every time a file is created/modified.
+You can use [Fresh](https://github.com/pilu/fresh) if you want to build and restart your application every time you create/modify/delete a file.
 
 ## Example:
 The following code is a simple example, the documentation in still in development.
