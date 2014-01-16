@@ -191,7 +191,7 @@ func loadConfigurationsFromFile(path, env string) {
 
 func init() {
   env = make(map[string]interface{})
-  SetLogger(log.New(os.Stderr, "", log.LstdFlags))
+  SetLogger(log.New(os.Stdout, "", log.LstdFlags))
 
   // configuration
   configFile := ConfigFilePath()
