@@ -81,8 +81,7 @@ func main() {
   router.Get("/", rootHandler)
   router.Get("/categories/:category_id/pages/:id", pageHandler)
 
-  http.Handle("/", router)
-  http.ListenAndServe(":7000", nil)
+  router.Run()
 }
 ```
 
@@ -162,8 +161,7 @@ func main() {
          AddBeforeFilter(addAppNameHeader).
          AddBeforeFilter(addTimeHeader)
 
-  http.Handle("/", router)
-  http.ListenAndServe(":7000", nil)
+  router.Run()
 }
 ```
 

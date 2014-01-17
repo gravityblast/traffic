@@ -19,7 +19,7 @@ const (
   DefaultViewsPath  = "views"
   DefaultPublicPath = "public"
   DefaultConfigFile = "traffic.conf"
-  DefaultPort       = 7000
+  DefaultPort       = 3000
   DefaultHost       = "127.0.0.1"
 )
 
