@@ -172,5 +172,5 @@ func main() {
 ## More
 
 * Code: <https://github.com/pilu/traffic/>
-* Mailing List: <https://groups.google.com/forum/#!forum/traffic-go>
+* Mailing List: <https://groups.google.com/d/forum/go-traffic>
 * IRC Channel: [#go-traffic](http://webchat.freenode.net/?channels=go-traffic) on Freenode
