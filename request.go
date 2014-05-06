@@ -1,24 +1,24 @@
 package traffic
 
 import (
-  "net/http"
-  "net/url"
+	"net/http"
+	"net/url"
 )
 
 type Request struct {
-  *http.Request
+	*http.Request
 }
 
 func (r Request) Params() url.Values {
-  return r.Request.URL.Query()
+	return r.Request.URL.Query()
 }
 
 func (r Request) Param(key string) string {
-  return r.Params().Get(key)
+	return r.Params().Get(key)
 }
 
 func newRequest(r *http.Request) *Request {
-  return &Request{
-    Request: r,
-  }
+	return &Request{
+		Request: r,
+	}
 }

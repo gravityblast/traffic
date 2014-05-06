@@ -1,21 +1,21 @@
 package traffic
 
 import (
-  "time"
+	"time"
 )
 
 type LoggerMiddleware struct {
-  router *Router
+	router *Router
 }
 
 func (loggerMiddleware *LoggerMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) {
-  startTime := time.Now()
+	startTime := time.Now()
 
-  if nextMiddleware := next(); nextMiddleware != nil {
-    nextMiddleware.ServeHTTP(w, r, next)
-  }
+	if nextMiddleware := next(); nextMiddleware != nil {
+		nextMiddleware.ServeHTTP(w, r, next)
+	}
 
-  duration := time.Since(startTime).Seconds()
+	duration := time.Since(startTime).Seconds()
 
-  Logger().Printf(`[%.6f] %d "%s"`, duration, w.StatusCode(), r.URL.Path)
+	Logger().Printf(`[%.6f] %d "%s"`, duration, w.StatusCode(), r.URL.Path)
 }
