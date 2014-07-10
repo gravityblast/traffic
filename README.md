@@ -24,6 +24,14 @@ Package traffic - a Sinatra inspired regexp/pattern mux for [Go](http://golang.o
   * [Serves static files](https://github.com/pilu/traffic/tree/master/examples/static-files)
   * Project Generator
 
+`development` is the default environment. The above middlewares are loaded only in `development`.
+
+If you want to run your application in `production`, export `TRAFFIC_ENV` with `production` as value.
+
+```bash
+TRAFFIC_ENV=production your-executable-name
+```
+
 ## Installation
 
 Dowload the `Traffic` code:
