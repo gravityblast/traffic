@@ -2,7 +2,6 @@ package traffic
 
 import (
 	"net/http"
-	"os"
 	"path/filepath"
 )
 
@@ -11,17 +10,30 @@ type StaticMiddleware struct {
 }
 
 func (middleware *StaticMiddleware) ServeHTTP(w ResponseWriter, r *Request, next NextMiddlewareFunc) {
-	path := filepath.Join(middleware.publicPath, r.URL.Path)
-	if info, err := os.Stat(path); err == nil && !info.IsDir() {
-		w.Header().Del("Content-Type")
-		http.ServeFile(w, r.Request, path)
+	callNext := func() {
+		if nextMiddleware := next(); nextMiddleware != nil {
+			nextMiddleware.ServeHTTP(w, r, next)
+		}
+	}
 
+	dir := http.Dir(middleware.publicPath)
+	path := r.URL.Path
+
+	file, err := dir.Open(path)
+	if err != nil {
+		callNext()
+		return
+	}
+	defer file.Close()
+
+	if info, err := file.Stat(); err == nil && !info.IsDir() {
+		w.Header().Del("Content-Type")
+		fullPath := filepath.Join(middleware.publicPath, path)
+		http.ServeFile(w, r.Request, fullPath)
 		return
 	}
 
-	if nextMiddleware := next(); nextMiddleware != nil {
-		nextMiddleware.ServeHTTP(w, r, next)
-	}
+	callNext()
 }
 
 func NewStaticMiddleware(publicPath string) *StaticMiddleware {
