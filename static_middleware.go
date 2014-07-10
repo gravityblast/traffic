@@ -2,7 +2,6 @@ package traffic
 
 import (
 	"net/http"
-	"path/filepath"
 )
 
 type StaticMiddleware struct {
@@ -28,8 +27,7 @@ func (middleware *StaticMiddleware) ServeHTTP(w ResponseWriter, r *Request, next
 
 	if info, err := file.Stat(); err == nil && !info.IsDir() {
 		w.Header().Del("Content-Type")
-		fullPath := filepath.Join(middleware.publicPath, path)
-		http.ServeFile(w, r.Request, fullPath)
+		http.ServeContent(w, r.Request, path, info.ModTime(), file)
 		return
 	}
 
