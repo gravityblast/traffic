@@ -181,4 +181,4 @@ func main() {
 
 * Code: <https://github.com/pilu/traffic/>
 * Mailing List: <https://groups.google.com/d/forum/go-traffic>
-* IRC Channel: [#go-traffic](http://webchat.freenode.net/?channels=go-traffic) on Freenode
+* Chat: <https://gitter.im/pilu/traffic>
