@@ -62,9 +62,18 @@ func getStringVar(key string) string {
 	return ""
 }
 
-func pathToRegexpString(routePath string) string {
-	var re *regexp.Regexp
+func pathToRegexp(routePath string) (*regexp.Regexp, bool) {
+	var (
+		re       *regexp.Regexp
+		isStatic bool
+	)
+
 	regexpString := routePath
+
+	isStaticRegexp := regexp.MustCompile(`[\(\)\?\<\>:]`)
+	if !isStaticRegexp.MatchString(routePath) {
+		isStatic = true
+	}
 
 	// Dots
 	re = regexp.MustCompile(`([^\\])\.`)
@@ -83,7 +92,9 @@ func pathToRegexpString(routePath string) string {
 		return fmt.Sprintf(`(?P<%s>[^/#?]+)`, m[1:len(m)])
 	})
 
-	return fmt.Sprintf(`\A%s\z`, regexpString)
+	s := fmt.Sprintf(`\A%s\z`, regexpString)
+
+	return regexp.MustCompile(s), isStatic
 }
 
 func getStringVarWithDefault(key, defaultValue string) string {

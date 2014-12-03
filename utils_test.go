@@ -1,9 +1,10 @@
 package traffic
 
 import (
-	assert "github.com/pilu/miniassert"
 	"os"
 	"testing"
+
+	assert "github.com/pilu/miniassert"
 )
 
 func resetGlobalEnv() {
@@ -39,34 +40,43 @@ func TestGetStringVar(t *testing.T) {
 	resetGlobalEnv()
 }
 
-func TestPathToRegexpString(t *testing.T) {
-	tests := [][]string{
+func TestPathToRegexp(t *testing.T) {
+	tests := [][]interface{}{
 		{
 			`/`,
 			`\A/\z`,
+			true,
 		},
 		{
 			`/foo/bar`,
 			`\A/foo/bar\z`,
+			true,
 		},
 		{
 			`/foo/bar`,
 			`\A/foo/bar\z`,
+			true,
 		},
 		{
 			`/:foo/bar/:baz`,
 			`\A/(?P<foo>[^/#?]+)/bar/(?P<baz>[^/#?]+)\z`,
+			false,
 		},
 		{
 			`(/categories/:category_id)?/posts/:id`,
 			`\A(/categories/(?P<category_id>[^/#?]+))?/posts/(?P<id>[^/#?]+)\z`,
+			false,
 		},
 	}
 
 	for _, pair := range tests {
-		pathSegment := pair[0]
-		expectedRegexpSegment := pair[1]
-		assert.Equal(t, expectedRegexpSegment, pathToRegexpString(pathSegment))
+		path := pair[0].(string)
+		expectedRegexp := pair[1].(string)
+		expectedIsStatic := pair[2].(bool)
+
+		r, isStatic := pathToRegexp(path)
+		assert.Equal(t, expectedRegexp, r.String())
+		assert.Equal(t, expectedIsStatic, isStatic)
 	}
 }
 

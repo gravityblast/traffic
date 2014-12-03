@@ -8,6 +8,7 @@ import (
 type Route struct {
 	Path          string
 	PathRegexp    *regexp.Regexp
+	IsStatic      bool
 	Handlers      []HttpHandleFunc
 	beforeFilters []HttpHandleFunc
 }
@@ -19,10 +20,12 @@ func (route *Route) AddBeforeFilter(beforeFilters ...HttpHandleFunc) *Route {
 }
 
 func NewRoute(path string, handlers ...HttpHandleFunc) *Route {
+	regexp, isStatic := pathToRegexp(path)
 	route := &Route{
 		Path:       path,
+		PathRegexp: regexp,
+		IsStatic:   isStatic,
 		Handlers:   handlers,
-		PathRegexp: regexp.MustCompile(pathToRegexpString(path)),
 	}
 
 	return route
@@ -30,6 +33,10 @@ func NewRoute(path string, handlers ...HttpHandleFunc) *Route {
 
 func (route Route) Match(path string) (url.Values, bool) {
 	values := make(url.Values)
+
+	if route.IsStatic {
+		return values, route.Path == path
+	}
 
 	matches := route.PathRegexp.FindAllStringSubmatch(path, -1)
 	if matches != nil {
