@@ -169,6 +169,15 @@ func (router *Router) Run() {
 	}
 }
 
+func (router *Router) RunSSL(certFile, keyFile string) {
+	address := fmt.Sprintf("%s:%d", Host(), Port())
+	Logger().Printf("Starting in %s on %s", Env(), address)
+	err := http.ListenAndServeTLS(address, certFile, keyFile, router)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func loadConfigurationsFromFile(path, env string) {
 	mainSectionName := "main"
 	sections, err := config.ParseFile(path, mainSectionName)
