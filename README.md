@@ -34,13 +34,13 @@ TRAFFIC_ENV=production your-executable-name
 
 ## Installation
 
-Dowload the `Traffic` code:
+Download the `Traffic` code:
 
 ```bash
 go get github.com/pilu/traffic
 ```
 
-Build the command line tool:
+Build the command-line tool:
 
 ```bash
 go get github.com/pilu/traffic/traffic
@@ -60,7 +60,7 @@ go build && ./hello
 You can use [Fresh](https://github.com/pilu/fresh) if you want to build and restart your application every time you create/modify/delete a file.
 
 ## Example:
-The following code is a simple example, the documentation in still in development.
+The following code is a simple example, the documentation is still in development.
 For more examples check the `examples` folder.
 
 ```go
@@ -98,7 +98,7 @@ func main() {
 You can also add "before filters" to all your routes or just to some of them:
 
 ```go
-router := traffic.New()
+router: = traffic.New()
 
 // Executed before all handlers
 router.AddBeforeFilter(checkApiKey).
